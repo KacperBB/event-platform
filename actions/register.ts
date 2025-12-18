@@ -1,6 +1,6 @@
 "use server"; 
 
-import { db } from "@/lib/db"; 
+import { prisma } from '@/lib/db'
 import bcrypt from "bcryptjs"; 
 import { RegisterSchema } from "@/schemas";
 
@@ -14,8 +14,10 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const {email, password, name, role} = validatedFields.data;
 
 
-  const existingUser = await db.user.findFirst({
-    where: {email}
+  const existingUser = await prisma.user.findFirst({
+    where: {
+        email: email
+    }
   });
 
   if (existingUser) {
@@ -35,7 +37,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     const randomId = Math.random().toString(36).substring(2, 6);
     const finalHandle = `${baseSlug}-${randomId}`;
 
-  const user = await db.user.create({
+  const user = await prisma.user.create({
     data: {
         name,
         email,
