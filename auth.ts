@@ -1,27 +1,39 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
+// auth.ts
 import NextAuth from "next-auth";
-import GitHub from "next-auth/providers/github";
-import Google from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import bcrypt from "bcryptjs"; // Tu jest bezpieczny!
+
+import { prisma } from "@/lib/db";
+import authConfig from "@/auth.config";
+import { LoginSchema } from "@/schemas";
 import Credentials from "next-auth/providers/credentials";
-import { prisma } from "./lib/db";
 
-export const {handlers, auth, signIn, signOut} = NextAuth({
-    adapter: PrismaAdapter(prisma),
-    session: { strategy: "jwt" },
-    providers: [
-        GitHub,
-        Google,
-        Credentials({
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" },
+  ...authConfig,
+  providers: [
+    ...authConfig.providers, // bierzemy Google i GitHub z configu
+    // Ale dla Credentials nadpisujemy logikę:
+    Credentials({
+    credentials: {
+      email: {}, // Puste obiekty wystarczą, bo i tak używamy własnego formularza i Zoda
+      password: {},
+    },
+    async authorize(credentials) {
+        const validatedFields = LoginSchema.safeParse(credentials);
 
-        }),
-    ],
+        if (validatedFields.success) {
+          const { email, password } = validatedFields.data;
+          
+          const user = await prisma.user.findUnique({ where: { email } });
+          if (!user || !user.password) return null;
 
-    callbacks: {
-        async session({session, token}) {
-            if (token.sub && session.user) {
-                session.user.id = token.sub;
-            }
-            return session;
+          const passwordMatch = await bcrypt.compare(password, user.password);
+          if (passwordMatch) return user;
         }
-    }
-})
+        return null;
+      }
+  })
+  ]
+});
