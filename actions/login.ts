@@ -4,6 +4,8 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { LoginSchema } from "@/schemas";
+import { AuthError } from "next-auth";
+import { signIn } from "@/auth";
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
     const vaildatedFields = LoginSchema.safeParse(values);
@@ -31,5 +33,22 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
         return { error: "Dane logowania są nieprawidłowe!" };
     }
 
-    return { success: "Zalogowano pomyślnie!" };
+        try {
+            await signIn("credentials", {
+            email: values.email,
+            password: values.password,
+            redirectTo: "/dashboard", 
+            });
+        } catch (error) {
+        if (error instanceof AuthError) {
+            switch (error.type) {
+                case "CredentialsSignin":
+                    return { error: "Błędne dane logowania!" };
+                    default:
+                    return { error: "Coś poszło nie tak!"};
+            } 
+        }
+
+        throw error;
+    }
 }

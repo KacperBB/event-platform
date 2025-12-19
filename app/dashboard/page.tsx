@@ -1,4 +1,5 @@
 import { logout } from '@/actions/logout';
+import { updateHandle } from '@/actions/settings';
 import { auth } from '@/auth'
 import Image from 'next/image';
 import React from 'react'
@@ -6,6 +7,9 @@ import React from 'react'
 export default async function Dashboard() {
     const session = await auth();
 
+    const userImage = session?.user?.image;
+    const userName = session?.user?.name || "Użytkownik";
+    
 return ( 
     <div className="p-10 flex flex-col gap-y-4">
       <h1 className="text-2xl font-bold">Dashboard</h1>
@@ -26,8 +30,28 @@ return (
             <p className="font-semibold">{session?.user?.name}</p>
             <p className="text-xs text-gray-500">{session?.user?.email}</p>
           </div>
+
+          <div>
+        <h2 className="text-xl font-bold">Twój profil</h2>
+        <p className="text-gray-500 text-sm">Twój aktualny handle: @{session?.user?.handle}</p>
+      </div>
         </div>
       </div>
+
+      <form action={async (formData: FormData) => {
+        "use server";
+        const h = formData.get("handle") as string;
+        await updateHandle(h);
+      }} className="flex gap-x-2">
+        <input 
+          name="handle" 
+          placeholder="Nowy handle" 
+          className="border p-2 rounded-md"
+        />
+        <button className="bg-blue-600 text-white px-4 py-2 rounded-md">
+          Zapisz
+        </button>
+      </form>
 
         <form action={logout}>
             <button type="submit" className="bg-red-500 text-white px-4 py-2 rounded">

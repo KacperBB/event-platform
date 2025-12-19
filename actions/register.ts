@@ -36,6 +36,8 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
     const randomId = Math.random().toString(36).substring(2, 6);
     const finalHandle = `${baseSlug}-${randomId}`;
+    
+    const generatedImage = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`;
 
   const user = await prisma.user.create({
     data: {
@@ -44,6 +46,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
         password: hashedPassword,
         role,
         handle: finalHandle,
+        image: generatedImage, 
     }
   });
 
