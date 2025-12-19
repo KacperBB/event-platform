@@ -13,11 +13,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   ...authConfig,
   providers: [
-    ...authConfig.providers, // bierzemy Google i GitHub z configu
-    // Ale dla Credentials nadpisujemy logikę:
+    ...authConfig.providers, 
     Credentials({
     credentials: {
-      email: {}, // Puste obiekty wystarczą, bo i tak używamy własnego formularza i Zoda
+      email: {}, 
       password: {},
     },
     async authorize(credentials) {

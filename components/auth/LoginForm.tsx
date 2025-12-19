@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Social } from "./social";
 
 export const LoginForm = () => {
     const [isPending, startTransition] = useTransition();
@@ -81,6 +82,7 @@ export const LoginForm = () => {
           </Button>
         </form>
       </Form>
+      <Social/>
     </div>
   );
 }
