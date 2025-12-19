@@ -11,6 +11,26 @@ import Credentials from "next-auth/providers/credentials";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+    callbacks: {
+    async session({ session, token }) {
+        if (token.sub && session.user) {
+            session.user.id = token.sub;
+        }
+
+        if (session.user) {
+            const dbUser = await prisma.user.findUnique({
+                where: { id: session.user.id }
+            });
+            session.user.handle = dbUser?.handle;
+        }
+
+        return session;
+    },
+
+    async jwt({ token }) {
+        return token;
+    }
+  },
   ...authConfig,
   providers: [
     ...authConfig.providers, 

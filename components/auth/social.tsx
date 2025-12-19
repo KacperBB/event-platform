@@ -25,7 +25,7 @@ export const Social = () => {
         disabled={!!loadingProvider} 
         onClick={() => onClick("google")}
       >
-        <FcGoogle className="h-5 w-5" />
+        <FcGoogle className={`h-5 w-5 ${loadingProvider === "github" ? "animate-pulse" : ""}`} />
       </Button>
       <Button
         size="lg"
@@ -34,7 +34,7 @@ export const Social = () => {
         disabled={!!loadingProvider}
         onClick={() => onClick("github")}
       >
-        <FaGithub className="h-5 w-5" />
+        <FaGithub className={`h-5 w-5 ${loadingProvider === "github" ? "animate-pulse" : ""}`} />
       </Button>
     </div>
   );

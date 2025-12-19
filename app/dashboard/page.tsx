@@ -1,0 +1,39 @@
+import { logout } from '@/actions/logout';
+import { auth } from '@/auth'
+import Image from 'next/image';
+import React from 'react'
+
+export default async function Dashboard() {
+    const session = await auth();
+
+return ( 
+    <div className="p-10 flex flex-col gap-y-4">
+      <h1 className="text-2xl font-bold">Dashboard</h1>
+      
+      <div className="bg-white p-6 rounded-xl shadow-md border">
+        <p className="text-sm text-muted-foreground">Zalogowany jako:</p>
+        <div className="flex items-center gap-x-3 mt-2">
+          {session?.user?.image && (
+            <Image 
+                width={24}
+                height={24}
+              src={session.user.image} 
+              alt="Avatar" 
+              className="h-10 w-10 rounded-full"
+            />
+          )}
+          <div>
+            <p className="font-semibold">{session?.user?.name}</p>
+            <p className="text-xs text-gray-500">{session?.user?.email}</p>
+          </div>
+        </div>
+      </div>
+
+        <form action={logout}>
+            <button type="submit" className="bg-red-500 text-white px-4 py-2 rounded">
+            Wyloguj się
+            </button>
+        </form>
+    </div>
+  );
+}
