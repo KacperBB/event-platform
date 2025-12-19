@@ -15,3 +15,12 @@ export const RegisterSchema = z.object({
         invalid_type_error: "Wybierz poprawną rolę",
     }),
 });
+
+export const LoginSchema = z.object ({
+    email: z.string().email({
+        message: "Adres e-mail jest wymagany",
+    }),
+    password: z.string().min(1, {
+        message: "Hasło jest wymagane",
+    }),
+});
