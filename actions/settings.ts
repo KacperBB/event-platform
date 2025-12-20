@@ -3,6 +3,10 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { Filter } from "bad-words";
+import * as z from "zod";
+
+const filter = new Filter();
 
 export const updateHandle = async (newHandle: string) => {
     const session = await auth();
@@ -16,10 +20,25 @@ export const updateHandle = async (newHandle: string) => {
         return { error: " Handle musi mieć 3-20 znaków i nie zawierać spacji"};
     }
 
+    const handleSchema = z.string()
+        .min(3, "Minimum 3 znaki")
+        .max(20, "Maksimum 20 znaków")
+        .regex(/^[a-zA-Z0-9_]+$/, "Tylko litery, cyfry i podkreślniki")
+        .refine((val) => !filter.isProfane(val), {
+            message: "Ten handle zawiera niedozwolone słownictwo",
+        });
+    
+        const validation = handleSchema.safeParse(newHandle);
+
+        if (!validation.success) {
+            return { error: validation.error.issues[0]?.message};
+        }
+
     try {
         const existingHandle = await prisma.user.findUnique({
             where: { handle: newHandle }
         });
+
 
         if(existingHandle && existingHandle.id !== session.user.id) {
             return { error: "Ten handle jest już zajęty!"};

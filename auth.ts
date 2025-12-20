@@ -10,7 +10,11 @@ import Credentials from "next-auth/providers/credentials";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  session: { 
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
+ },
   events: {
     async createUser({ user }) {
         console.log("Tworzenie nowego użytkownika, generuje handle dla:", user.email);
