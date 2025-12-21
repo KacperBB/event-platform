@@ -44,7 +44,7 @@ try {
     revalidatePath("/dashboard");
     return { success: "Wydarzenie zostało utworzone!", id: event.id };
 } catch (error) {
-    console.error("PRISMA ERROR:", error); // To pokaże Ci w terminalu dokładny powód błędu
+    console.error("PRISMA ERROR:", error); 
     return { error: "Błąd podczas zapisu do bazy danych." };
 }
 };

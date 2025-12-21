@@ -1,6 +1,7 @@
 import { logout } from '@/actions/logout';
 import { updateHandle } from '@/actions/settings';
 import { auth } from '@/auth'
+import HandleDescription from '@/components/auth/HandleDescription';
 import { HandleForm } from '@/components/auth/HandleForm';
 import Image from 'next/image';
 import React from 'react'
@@ -37,6 +38,7 @@ return (
       </div>
 
       <HandleForm/>
+      <HandleDescription/>
 
         <form action={logout}>
             <button type="submit" className="bg-red-500 text-white px-4 py-2 rounded">

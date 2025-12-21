@@ -28,6 +28,7 @@ model User {
   image           String?
   role            UserRole    @default(USER)
   isverified      Boolean     @default(false)
+  description     String?
 
   //Relations
   organizedEvents   Event[]   @relation("EventOrganizer")

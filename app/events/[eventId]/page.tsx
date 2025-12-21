@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { EventMap } from "@/components/EventMap"; // Importujemy mapę
+import { EventCreator } from "@/components/EventCreator";
 
 export default async function EventPage({ 
   params 
@@ -11,6 +12,9 @@ export default async function EventPage({
   const { eventId } = await params; 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
+    include: {
+        creator: true,
+    }
   });
 
   if (!event) notFound();
@@ -24,8 +28,18 @@ export default async function EventPage({
 
       {/* Przekazujemy dane z serwera do komponentu klienckiego */}
       <section className="h-[400px] w-full">
-        <EventMap lat={event.lat} lng={event.lng} />
+        <EventMap 
+            lat={event.lat} 
+            lng={event.lng} 
+            title={event.title} 
+            address={event.address} 
+            />
       </section>
+      <EventCreator 
+        name={event.creator.name} 
+        image={event.creator.image} 
+        description={event.creator.description}
+      />
     </div>
   );
 }
