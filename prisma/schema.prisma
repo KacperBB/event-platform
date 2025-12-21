@@ -58,6 +58,7 @@ model Event {
   creatorId     String
   creator       User        @relation("EventOrganizer", fields: [creatorId], references: [id])
 
+  maxCapacity   Int?
   moderators    User[]      @relation("EventModerators")
   bookings      Booking[]
 }
@@ -66,7 +67,9 @@ model Booking {
   id          String          @id @default(cuid())
   createdAt   DateTime        @default(now())
   status      BookingStatus   @default(PENDING)
-
+  guestsCount Int             @default(1)
+  expiresAt   DateTime?
+  
   //Relations
   userId      String
   user        User            @relation(fields: [userId], references: [id])

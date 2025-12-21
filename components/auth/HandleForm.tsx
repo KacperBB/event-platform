@@ -38,7 +38,7 @@ export  const HandleForm = ({ initialHandle }: HandleFormProps) => {
             name="handle"
             disabled={isPending}
             defaultValue={initialHandle || ""}
-            placeholder="np. kacper_dev"
+            placeholder={initialHandle}
           />
           <Button type="submit" disabled={isPending}>
             {isPending ? "Zapisywanie..." : "Zapisz"}

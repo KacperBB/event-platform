@@ -43,11 +43,10 @@ const HandleDescription = ({ initialDescription }: DescriptionFormProps) => {
           </p>
           <Textarea
             name="Description"
-            value={description}
             disabled={isPending}
             onChange={(e) => setDescription(e.target.value.slice(0, maxLength))}
             defaultValue={initialDescription || ""}
-            placeholder="Opowiedz coś o sobie..."
+            placeholder={initialDescription}
             className='resize-none'
           />
           <Button type="submit" disabled={isPending}>

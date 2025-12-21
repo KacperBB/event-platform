@@ -1,8 +1,8 @@
-// app/events/[eventId]/page.tsx
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { EventMap } from "@/components/EventMap"; // Importujemy mapę
 import { EventCreator } from "@/components/EventCreator";
+import { BookingButton } from "@/components/BookingButton";
 
 export default async function EventPage({ 
   params 
@@ -14,10 +14,26 @@ export default async function EventPage({
     where: { id: eventId },
     include: {
         creator: true,
+        bookings: true,
     }
   });
 
   if (!event) notFound();
+
+  const totalOccupancy = event.bookings.reduce((sum, b) => {
+    const isExpired = b.status === "PENDING" && b.expiresAt && new Date() > b.expiresAt;
+
+    if (b.status === "EXPIRED" || isExpired) {
+      return sum;
+    }
+
+    return sum + b.guestsCount;
+  }, 0);
+  
+  const maxCapacity = event.maxCapacity || 0;
+  const isInfinite = !event.maxCapacity;
+  const spotsLeft = isInfinite ? Infinity : maxCapacity - totalOccupancy;
+  const isFull = !isInfinite && spotsLeft <= 0;
 
   return (
     <div className="container py-10 space-y-8">
@@ -26,7 +42,6 @@ export default async function EventPage({
         <p className="text-muted-foreground">{event.address}</p>
       </section>
 
-      {/* Przekazujemy dane z serwera do komponentu klienckiego */}
       <section className="h-[400px] w-full">
         <EventMap 
             lat={event.lat} 
@@ -35,6 +50,11 @@ export default async function EventPage({
             address={event.address} 
             />
       </section>
+      <BookingButton
+          eventId={event.id} 
+          disabled={isFull} 
+          spotsLeft={isInfinite ? 999 : spotsLeft} 
+        />
       <EventCreator 
         name={event.creator.name} 
         image={event.creator.image} 
