@@ -13,13 +13,19 @@ export const MockLightningPayment = ({ bookingId, amount } : { bookingId: string
     const handlePay = async () => {
         setLoading(true);
         // Network simulation
+
+        const mode = localStorage.getItem("dev_payment_mode") || "success";
+        const shouldSucced = mode === "success";
+        
         setTimeout( async() => {
-            const res = await simulatePayment(bookingId);
-            if (res.success) {
-                toast.success("Płatność odebrana przez sieć!");
+            const res = await simulatePayment(bookingId, shouldSucced);
+            if (res.error) {
+                toast.error(res.error);
+            } else {
+                toast.success("Płatność się powiodła");
                 router.refresh(); 
             }
-            setLoading(flase);
+            setLoading(false);
         }, 1500 );
     };
 

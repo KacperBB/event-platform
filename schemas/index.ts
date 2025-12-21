@@ -34,4 +34,8 @@ export const EventSchema = z.object({
     }),
     lat: z.number().refine(val => val !== 0, "Proszę wybrać adres z podpowiedzi"),
     lng: z.number().refine(val => val !== 0, "Proszę wybrać adres z podpowiedzi"),
+    maxCapacity: z.number().optional(),
+    bookingDeadline: z.date().optional(),
+    thumbnail: z.string().optional(),
+    images: z.array(z.string()).optional(),
 });

@@ -61,6 +61,7 @@ model Event {
   maxCapacity   Int?
   moderators    User[]      @relation("EventModerators")
   bookings      Booking[]
+  bookingDeadline   DateTime?
 }
 
 model Booking {

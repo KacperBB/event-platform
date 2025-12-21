@@ -46,7 +46,7 @@ export const createBooking = async (eventId: string, guestsCount: number) => {
           userId,
           guestsCount,
           status: "PENDING",
-          expiresAt.
+          expiresAt,
         },
       });
     });
