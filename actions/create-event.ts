@@ -7,44 +7,46 @@ import { EventSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 
 export const createEvent = async (values: z.infer<typeof EventSchema>) => {
-    const session = await auth();
-    if (!session?.user?.id) {
-        return { error: "Musisz być zalogowany!" };
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { error: "Musisz być zalogowany!" };
+  }
+
+  let finalLat = values.lat;
+  let finalLng = values.lng;
+
+  if (finalLat === 0 || finalLng === 0) {
+    const coords = await getCoordsFromAddress(values.address);
+
+    if (!coords) {
+      return {
+        error: "📍 Nie udało się odnaleźć tego adresu na mapie.",
+      };
     }
 
-    let finalLat = values.lat;
-    let finalLng = values.lng;
+    finalLat = coords.lat;
+    finalLng = coords.lng;
+  }
 
-    if (finalLat === 0 || finalLng === 0) {
-        const coords = await getCoordsFromAddress(values.address);
-        
-        if (!coords) {
-            return { 
-                error: "📍 Nie udało się odnaleźć tego adresu na mapie." 
-            };
-        }
-        
-        finalLat = coords.lat;
-        finalLng = coords.lng;
-    }
-
-try {
+  try {
     const event = await prisma.event.create({
-        data: {
-            title: values.title,
-            description: values.description,
-            address: values.address,
-            date: values.date,
-            lat: finalLat, 
-            lng: finalLng,
-            creatorId: session.user.id,
-        },
+      data: {
+        title: values.title,
+        description: values.description,
+        address: values.address,
+        date: values.date,
+        lat: finalLat,
+        lng: finalLng,
+        creatorId: session.user.id,
+        bookingDeadline: values.bookingDeadline,
+        maxCapacity: values.maxCapacity,
+      },
     });
 
     revalidatePath("/dashboard");
     return { success: "Wydarzenie zostało utworzone!", id: event.id };
-} catch (error) {
-    console.error("PRISMA ERROR:", error); 
+  } catch (error) {
+    console.error("PRISMA ERROR:", error);
     return { error: "Błąd podczas zapisu do bazy danych." };
-}
+  }
 };
