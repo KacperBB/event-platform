@@ -21,6 +21,7 @@ const BookingCountDown = ({ deadline }: BookingCountDownProps) => {
         return;
       }
 
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
         (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
       );
@@ -29,7 +30,7 @@ const BookingCountDown = ({ deadline }: BookingCountDownProps) => {
 
       if (distance < 1000 * 60 * 60) setIsUrgent(true);
 
-      setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+      setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
     }, 1000);
 
     return () => clearInterval(timer);
