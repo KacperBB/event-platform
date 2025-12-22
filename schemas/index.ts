@@ -38,4 +38,10 @@ export const EventSchema = z.object({
     bookingDeadline: z.date().optional(),
     thumbnail: z.string().optional(),
     images: z.array(z.string()).optional(),
+}).refine((data) => {
+    if (!data.bookingDeadline) return true;
+    return data.bookingDeadline < data.date;
+}, {
+message: "Termin rezerwacji musi być wcześniejszy niż data wydarzenia",
+  path: ["bookingDeadline"],
 });
