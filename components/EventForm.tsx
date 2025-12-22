@@ -24,6 +24,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { TiptapEditor } from "./TiptapEditor";
+import { FormField } from "./ui/form";
 
 const libraries: "places"[] = ["places"];
 
@@ -209,6 +210,22 @@ export const EventForm = () => {
             </PopoverContent>
           </Popover>
         )}
+        <FormField
+          control={form.control}
+          name="isPublished"
+          render={({ field }) => (
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="published-mode"
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+              <Label htmlFor="published-mode">
+                Opublikuj wydarzenie od razu
+              </Label>
+            </div>
+          )}
+        />
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>

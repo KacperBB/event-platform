@@ -17,6 +17,13 @@ enum BookingStatus {
   EXPIRED
 }
 
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  FINISHED
+}
+
 // User model
 model User {
   id              String      @id @default(cuid())
@@ -29,6 +36,7 @@ model User {
   role            UserRole    @default(USER)
   isverified      Boolean     @default(false)
   description     String?
+  status          EventStatus @default(DRAFT)
 
   //Relations
   organizedEvents   Event[]   @relation("EventOrganizer")

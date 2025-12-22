@@ -10,82 +10,91 @@ import Credentials from "next-auth/providers/credentials";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  session: { 
+  session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
     updateAge: 24 * 60 * 60,
- },
+  },
   events: {
     async createUser({ user }) {
-        console.log("Tworzenie nowego użytkownika, generuje handle dla:", user.email);
+      console.log(
+        "Tworzenie nowego użytkownika, generuje handle dla:",
+        user.email
+      );
 
-        if (user.email) {
-            const baseHandle = user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
-            const generatedHandle = `${baseHandle}_${Math.floor(1000 + Math.random() * 9000)}`;
+      if (user.email) {
+        const baseHandle = user.email
+          .split("@")[0]
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+        const generatedHandle = `${baseHandle}_${Math.floor(
+          1000 + Math.random() * 9000
+        )}`;
 
-            await prisma.user.update ({
-                where: { id: user.id },
-                data: { handle: generatedHandle },
-            });
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { handle: generatedHandle },
+        });
 
-            console.log("Zapisano handle:", generatedHandle);
-        }
-    }
+        console.log("Zapisano handle:", generatedHandle);
+      }
+    },
   },
-    callbacks: {
+  callbacks: {
     async session({ session, token }) {
-        if (token.sub && session.user) {
-            session.user.id = token.sub;
-        }
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
 
-        if (session.user?.id) {
-                const dbUser = await prisma.user.findUnique({
-                where: { id: session.user.id },
-                select: { handle: true } 
-                });
-                session.user.handle = dbUser?.handle;
-            }
+      if (session.user) {
+        session.user.role = token.role as "USER" | "ORGANIZER" | "ADMIN";
+        const dbUser = await prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { handle: true },
+        });
+        session.user.handle = dbUser?.handle;
+      }
 
-        return session;
+      return session;
     },
 
     async jwt({ token }) {
-        if (!token.sub) return token;
+      if (!token.sub) return token;
 
-        const existingUser = await prisma.user.findUnique({
-            where: { id: token.sub }
-        });
+      const existingUser = await prisma.user.findUnique({
+        where: { id: token.sub },
+      });
 
-        if (!existingUser) return token;
+      if (!existingUser) return token;
 
-        token.handle = existingUser.handle;
-        return token;
-    }
+      token.handle = existingUser.handle;
+      token.role = existingUser.role;
+
+      return token;
+    },
   },
   ...authConfig,
   providers: [
-    ...authConfig.providers, 
+    ...authConfig.providers,
     Credentials({
-  async authorize(credentials) {
+      async authorize(credentials) {
+        if (!credentials.email || !credentials.password) return null;
 
-    if (!credentials.email || !credentials.password) return null;
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email as string },
+        });
 
+        if (!user || !user.password) return null;
 
-    const user = await prisma.user.findUnique({
-      where: { email: credentials.email as string }
-    });
+        const passwordsMatch = await bcrypt.compare(
+          credentials.password as string,
+          user.password
+        );
 
-    if (!user || !user.password) return null;
+        if (passwordsMatch) return user;
 
-    const passwordsMatch = await bcrypt.compare(
-      credentials.password as string,
-      user.password
-    );
-
-    if (passwordsMatch) return user;
-
-    return null; 
-  },
-}),
-  ]
+        return null;
+      },
+    }),
+  ],
 });

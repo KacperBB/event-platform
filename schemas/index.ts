@@ -1,3 +1,4 @@
+import { EventStatus } from "@/app/generated/prisma";
 import { toast } from "sonner";
 import * as z from "zod";
 
@@ -44,7 +45,9 @@ export const EventSchema = z
     maxCapacity: z.number().optional(),
     bookingDeadline: z.date().optional(),
     thumbnail: z.string().optional(),
+    isPublished: z.boolean().default(false),
     images: z.array(z.string()).optional(),
+    status: z.nativeEnum(EventStatus).default(EventStatus.DRAFT),
   })
   .superRefine((data, ctx) => {
     // Sprawdzamy oba warunki naraz
