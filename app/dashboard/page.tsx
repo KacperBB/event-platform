@@ -3,7 +3,10 @@ import { updateHandle } from "@/actions/settings";
 import { auth } from "@/auth";
 import HandleDescription from "@/components/auth/HandleDescription";
 import { HandleForm } from "@/components/auth/HandleForm";
+import OrganizerPanel from "@/components/dashboard/OrganizerPanel";
+import { UserTickets } from "@/components/dashboard/UserTickets";
 import { prisma } from "@/lib/db";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import Image from "next/image";
 import React from "react";
 
@@ -21,9 +24,44 @@ export default async function Dashboard() {
     },
   });
 
+  const isOrganizer = session?.user.role === "ORGANIZER";
+
   return (
     <div className="p-10 flex flex-col gap-y-4">
       <h1 className="text-2xl font-bold">Dashboard</h1>
+
+      <div className="container py-10">
+        <h1 className="text-3xl font-bold mb-8">Witaj, {session.user.name}</h1>
+
+        <Tabs
+          defaultValue={isOrganizer ? "organizer" : "tickets"}
+          className="w-full"
+        >
+          <TabsList className="mb-6">
+            <TabsTrigger value="tickets">Moje Bilety</TabsTrigger>
+            {isOrganizer && (
+              <TabsTrigger value="organizer">Panel Organizatora</TabsTrigger>
+            )}
+            <TabsTrigger value="settings">Ustawienia</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="tickets">
+            <UserTickets userId={session.user.id} />
+          </TabsContent>
+
+          {isOrganizer && (
+            <TabsContent value="organizer">
+              <OrganizerPanel userId={session.user.id} />
+            </TabsContent>
+          )}
+
+          <TabsContent value="settings">
+            <div className="p-4 border rounded">
+              Ustawienia Twojego profilu...
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
 
       <div className="bg-white p-6 rounded-xl shadow-md border">
         <p className="text-sm text-muted-foreground">Zalogowany jako:</p>

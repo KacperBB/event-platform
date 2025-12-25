@@ -18,7 +18,7 @@ export const createEvent = async (values: z.infer<typeof EventSchema>) => {
 
   let finalLat = values.lat;
   let finalLng = values.lng;
-  const status = values.isPublished ? "PUBLISHED" : "DRAFT";
+  const eventStatus = values.isPublished ? "PUBLISHED" : "DRAFT";
   if (finalLat === 0 || finalLng === 0) {
     const coords = await getCoordsFromAddress(values.address);
 
@@ -44,7 +44,7 @@ export const createEvent = async (values: z.infer<typeof EventSchema>) => {
         creatorId: session.user.id,
         bookingDeadline: values.bookingDeadline,
         maxCapacity: values.maxCapacity,
-        status: status,
+        status: eventStatus,
       },
     });
 

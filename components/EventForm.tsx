@@ -25,14 +25,23 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { TiptapEditor } from "./TiptapEditor";
 import { FormField } from "./ui/form";
+import { updateEvent } from "@/actions/update-event";
 
 const libraries: "places"[] = ["places"];
 
-export const EventForm = () => {
+interface EventFormProps {
+  initialData?: any;
+  id?: string;
+}
+
+export const EventForm = ({ initialData, id }: EventFormProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [hasCapacity, setHasCapacity] = useState(false);
-  const [hasDeadline, setHasDeadline] = useState(false);
+
+  const [hasCapacity, setHasCapacity] = useState(!!initialData?.maxCapacity);
+  const [hasDeadline, setHasDeadline] = useState(
+    !!initialData?.bookingDeadLine
+  );
 
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
@@ -57,14 +66,19 @@ export const EventForm = () => {
 
   const onSubmit = (values: z.infer<typeof EventSchema>) => {
     startTransition(() => {
-      createEvent(values)
+      const action = id ? updateEvent(id, values) : createEvent(values);
+
+      action
         .then((data) => {
           if (data?.error) toast.error(data.error);
+
           if (data?.success) {
             toast.success(data.success);
-            router.push(`/events/${data.id}`);
+            router.push(id ? `/dashboard` : `/events/${data.id}`);
+            router.refresh();
           }
         })
+
         .catch(() => toast.error("Coś poszło nie tak..."));
     });
   };
@@ -228,9 +242,11 @@ export const EventForm = () => {
         />
       </div>
 
-      <Button type="submit" className="w-full" disabled={isPending}>
+      <Button type="submit" disabled={isPending}>
         {isPending ? (
           <Loader2 className="animate-spin" />
+        ) : id ? (
+          "Zapisz zmiany"
         ) : (
           "Opublikuj wydarzenie"
         )}

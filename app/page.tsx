@@ -2,7 +2,16 @@ import { prisma } from "@/lib/db";
 import { Event } from "@/types";
 import React from "react";
 
-const Home = () => {
+export default async function Home() {
+  const events = await prisma.event.findMany({
+    where: {
+      status: "PUBLISHED",
+    },
+    orderBy: {
+      date: "asc",
+    },
+  });
+
   const featuredEvent: Event = {
     id: "1",
     title: "Sample Event",
@@ -12,15 +21,6 @@ const Home = () => {
     date: new Date(),
     organizerId: "org1",
   };
-
-  const events = await prisma.event.findMany({
-    where: {
-      status: "PUBLISHED",
-    },
-    orderBy: {
-      date: "asc",
-    },
-  });
 
   return (
     <main className="p-24">
@@ -40,6 +40,4 @@ const Home = () => {
       </div>
     </main>
   );
-};
-
-export default Home;
+}
