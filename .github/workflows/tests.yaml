@@ -2,19 +2,26 @@ name: Event App Tests
 on: [push, pull_request]
 
 jobs:
-  run-tests:
+  unit-tests:
+    name: Unit Tests (Validation & Logic)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
       - name: Install
         run: npm install
-
-      - name: Unit Tests
+      - name: Generate Prisma Client
+        run: npx prisma generate
+      - name: Run Unit Tests
         run: npm run test:unit
 
-      - name: Integration Tests
+  integration-tests:
+    name: Integration Tests (Server Actions)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: npm install
+      - name: Generate Prisma Client
+        run: npx prisma generate
+      - name: Run Integration Tests
         run: npm run test:integration
