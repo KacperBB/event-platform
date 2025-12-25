@@ -15,6 +15,15 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
+vi.mock("next/cache", () => ({
+  revalidatePath: vi.fn(),
+}));
+
+vi.mock("next/navigation", () => ({
+  redirect: vi.fn(),
+  notFound: vi.fn(),
+}));
+
 describe("Event Management Actions", () => {
   it("should change status to CANCELLED instead of deleting", async () => {
     prisma.event.update.mockResolvedValue({
