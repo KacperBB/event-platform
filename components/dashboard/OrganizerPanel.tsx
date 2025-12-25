@@ -1,12 +1,14 @@
 import React from "react";
 import Link from "next/link";
-import { Edit, Trash2, Calendar, MapPin } from "lucide-react";
-import { prisma } from "@/lib/db"; // Upewnij się, że ścieżka do db jest poprawna
+import { Edit, Trash2, Calendar, MapPin, View } from "lucide-react";
+import { prisma } from "@/lib/db";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 import { DeleteEventButton } from "./DeleteEventButton";
+import { CldImage } from "next-cloudinary";
+import { EventImage } from "../EventImage";
 
 interface OrganizerPanelProps {
   userId: string;
@@ -53,6 +55,15 @@ const OrganizerPanel = async ({ userId }: OrganizerPanelProps) => {
             </div>
 
             <div className="flex flex-col sm:flex-row sm:gap-4 text-sm text-muted-foreground">
+              <div className="relative w-20 h-20 flex-shrink-0">
+                {event.image ? (
+                  <EventImage src={event.image} alt={event.title} />
+                ) : (
+                  <div className="w-full h-full bg-slate-100 rounded-md flex items-center justify-center">
+                    <Calendar className="text-slate-400 w-8 h-8" />
+                  </div>
+                )}
+              </div>
               <div className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
                 {format(new Date(event.date), "dd MMMM yyyy", { locale: pl })}
@@ -70,7 +81,11 @@ const OrganizerPanel = async ({ userId }: OrganizerPanelProps) => {
                 <Edit className="w-4 h-4" />
               </Link>
             </Button>
-
+            <Button variant="outline" size="icon" asChild title="View">
+              <Link href={`/events/${event.id}`}>
+                <View className="w-4 h-4" />
+              </Link>
+            </Button>
             <DeleteEventButton id={event.id} />
           </div>
         </div>

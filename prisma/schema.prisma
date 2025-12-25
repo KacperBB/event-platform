@@ -51,7 +51,7 @@ model Event {
   id              String      @id @default(cuid())
   title           String      
   description     String?
-  image           String?
+  image           String
   date            DateTime
   status          EventStatus @default(DRAFT)
   //Localization

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, useRef, useTransition } from "react";
+import { useState, useRef, useTransition, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
@@ -26,6 +26,8 @@ import { Label } from "@/components/ui/label";
 import { TiptapEditor } from "./TiptapEditor";
 import { FormField } from "./ui/form";
 import { updateEvent } from "@/actions/update-event";
+import { ImageUpload } from "./ImageUpload";
+import { pl } from "date-fns/locale";
 
 const libraries: "places"[] = ["places"];
 
@@ -43,6 +45,13 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
     !!initialData?.bookingDeadLine
   );
 
+  useEffect(() => {
+    if (initialData) {
+      setHasCapacity(!!initialData.maxCapacity);
+      setHasDeadline(!!initialData.bookingDeadline);
+    }
+  }, [initialData]);
+
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
   const { isLoaded } = useJsApiLoader({
@@ -56,6 +65,7 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
       ? {
           ...initialData,
           isPublished: initialData.status === "PUBLISHED",
+          thumbnail: initialData.image || "",
           date: initialData.date ? new Date(initialData.date) : undefined,
           bookingDeadline: initialData.bookingDeadline
             ? new Date(initialData.bookingDeadline)
@@ -67,6 +77,7 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
           lat: 0,
           lng: 0,
           description: "",
+          thumbnail: "",
           maxCapacity: undefined,
           isPublished: false,
         },
@@ -118,14 +129,25 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
         />
 
         <div className="flex gap-4">
-          <Input
-            {...form.register("thumbnail")}
-            placeholder="URL Thumbnaila (obrazek główny)"
-            disabled={isPending}
+          <FormField
+            control={form.control}
+            name="thumbnail"
+            render={({ field }) => (
+              <div className="space-y-2">
+                <Label>Zdjęcie wydarzenia</Label>
+                <ImageUpload
+                  value={field.value}
+                  onChange={field.onChange}
+                  onRemove={() => field.onChange("")}
+                />
+                {errors.thumbnail && (
+                  <p className="text-sm text-red-500">
+                    {errors.thumbnail.message}
+                  </p>
+                )}
+              </div>
+            )}
           />
-          <Button type="button" variant="outline">
-            <ImagePlus className="h-4 w-4" />
-          </Button>
         </div>
       </div>
 
@@ -209,31 +231,56 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
               Kiedy ma zniknąć licznik i opcja zakupu?
             </p>
           </div>
-          <Switch checked={hasDeadline} onCheckedChange={setHasDeadline} />
+          <Switch
+            checked={hasDeadline}
+            onCheckedChange={(checked) => {
+              setHasDeadline(checked);
+              if (!checked) {
+                form.setValue("bookingDeadline", null);
+              }
+            }}
+          />
         </div>
+
         {hasDeadline && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full">
-                {form.watch("bookingDeadline")
-                  ? format(form.watch("bookingDeadline")!, "PPP HH:mm")
-                  : "Wybierz termin zakończenia"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={form.watch("bookingDeadline")}
-                onSelect={(d) => form.setValue("bookingDeadline", d as Date)}
-                disabled={(date) => {
-                  const eventDate = form.watch("date");
-                  return (
-                    date < today || (eventDate ? date >= eventDate : false)
-                  );
-                }}
-              />
-            </PopoverContent>
-          </Popover>
+          <div className="animate-in fade-in slide-in-from-top-1">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  {form.watch("bookingDeadline")
+                    ? format(
+                        new Date(form.watch("bookingDeadline")!),
+                        "PPP HH:mm",
+                        { locale: pl }
+                      )
+                    : "Wybierz termin zakończenia"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={
+                    form.watch("bookingDeadline")
+                      ? new Date(form.watch("bookingDeadline")!)
+                      : undefined
+                  }
+                  onSelect={(d) => form.setValue("bookingDeadline", d)}
+                  disabled={(date) => {
+                    const eventDate = form.watch("date");
+                    return (
+                      date < today ||
+                      (eventDate ? date >= new Date(eventDate) : false)
+                    );
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+            {errors.bookingDeadline && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.bookingDeadline.message}
+              </p>
+            )}
+          </div>
         )}
         <FormField
           control={form.control}

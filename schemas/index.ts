@@ -45,10 +45,9 @@ export const EventSchema = z
     maxCapacity: z.number().optional().nullable(),
     bookingDeadline: z.date().optional().nullable(),
     thumbnail: z
-      .string()
+      .string({ required_error: "Zdjęcie jest wymagane" })
       .url("To nie jest poprawny adres URL")
-      .optional()
-      .or(z.literal("")),
+      .min(1, "Proszę dodać zdjęcie wydarzenia"),
     isPublished: z.boolean().default(false),
     images: z.array(z.string()).optional(),
     status: z.nativeEnum(EventStatus).optional().default(EventStatus.DRAFT),

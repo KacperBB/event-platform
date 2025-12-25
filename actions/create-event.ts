@@ -38,6 +38,7 @@ export const createEvent = async (values: z.infer<typeof EventSchema>) => {
         title: values.title,
         description: values.description,
         address: values.address,
+        image: values.thumbnail,
         date: values.date,
         lat: finalLat,
         lng: finalLng,
