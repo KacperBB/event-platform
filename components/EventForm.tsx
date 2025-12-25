@@ -52,34 +52,45 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
 
   const form = useForm<z.infer<typeof EventSchema>>({
     resolver: zodResolver(EventSchema),
-    defaultValues: {
-      title: "",
-      address: "",
-      lat: 0,
-      lng: 0,
-      description: "",
-      maxCapacity: undefined,
-    },
+    defaultValues: initialData
+      ? {
+          ...initialData,
+          isPublished: initialData.status === "PUBLISHED",
+          date: initialData.date ? new Date(initialData.date) : undefined,
+          bookingDeadline: initialData.bookingDeadline
+            ? new Date(initialData.bookingDeadline)
+            : undefined,
+        }
+      : {
+          title: "",
+          address: "",
+          lat: 0,
+          lng: 0,
+          description: "",
+          maxCapacity: undefined,
+          isPublished: false,
+        },
   });
 
   const { errors } = form.formState;
 
   const onSubmit = (values: z.infer<typeof EventSchema>) => {
-    startTransition(() => {
-      const action = id ? updateEvent(id, values) : createEvent(values);
+    startTransition(async () => {
+      try {
+        const data = id
+          ? await updateEvent(id, values)
+          : await createEvent(values);
 
-      action
-        .then((data) => {
-          if (data?.error) toast.error(data.error);
-
-          if (data?.success) {
-            toast.success(data.success);
-            router.push(id ? `/dashboard` : `/events/${data.id}`);
-            router.refresh();
-          }
-        })
-
-        .catch(() => toast.error("Coś poszło nie tak..."));
+        if (data?.error) {
+          toast.error(data.error);
+        } else if (data?.success) {
+          toast.success(data.success);
+          router.push("/dashboard");
+          router.refresh();
+        }
+      } catch (err) {
+        toast.error("Wystąpił nieoczekiwany błąd.");
+      }
     });
   };
 

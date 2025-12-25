@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { EventSchema } from "@/schemas";
+import { revalidatePath } from "next/cache";
 import * as z from "zod";
 
 export const updateEvent = async (
@@ -10,23 +11,39 @@ export const updateEvent = async (
   values: z.infer<typeof EventSchema>
 ) => {
   const session = await auth();
+
   if (!session?.user?.id || session.user.role !== "ORGANIZER") {
     return { error: "Brak uprawnień" };
   }
 
+  const validatedFields = EventSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Nieprawidłowe dane." };
+  }
+
   try {
-    const status = values.isPublished ? "PUBLISHED" : "DRAFT";
+    const { isPublished, thumbnail, ...data } = validatedFields.data;
+
+    const eventStatus = isPublished ? "PUBLISHED" : "DRAFT";
 
     await prisma.event.update({
-      where: { id, creatorId: session.user.id },
+      where: {
+        id,
+        creatorId: session.user.id,
+      },
       data: {
-        ...values,
-        status: status,
+        ...data,
+        status: eventStatus,
+        image: thumbnail || null,
       },
     });
 
+    revalidatePath("/dashboard");
+    revalidatePath(`/events/${id}`);
+
     return { success: "Wydarzenie zaktualizowane!" };
   } catch (error) {
-    return { error: "Błąd podczas aktualizacji" };
+    console.error(error); // Warto widzieć błąd w konsoli serwera
+    return { error: "Błąd podczas aktualizacji bazy danych" };
   }
 };

@@ -7,7 +7,6 @@ import { MapPin, Calendar, Ticket } from "lucide-react";
 import Link from "next/link";
 
 export async function UserTickets({ userId }: { userId: string }) {
-  // Pobieramy rezerwacje użytkownika wraz z danymi o wydarzeniu
   const bookings = await prisma.booking.findMany({
     where: { userId: userId },
     include: {

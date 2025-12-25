@@ -6,11 +6,12 @@ import { EventForm } from "@/components/EventForm";
 export default async function EditEventPage({
   params,
 }: {
-  params: { eventId: string };
+  params: Promise<{ eventId: string }>;
 }) {
+  const { eventId } = await params;
   const session = await auth();
   const event = await prisma.event.findUnique({
-    where: { id: params.eventId },
+    where: { id: eventId },
   });
 
   if (!event) notFound();
@@ -19,6 +20,7 @@ export default async function EditEventPage({
   return (
     <div className="container py-10">
       <h1 className="text-2xl font-bold mb-8">Edytuj wydarzenie</h1>
+      <div> {event?.status} </div>
       <EventForm initialData={event} id={event.id} />
     </div>
   );
