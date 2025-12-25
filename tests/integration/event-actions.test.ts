@@ -1,4 +1,4 @@
-import { cancelEvent } from "@/actions/delete-event";
+import { cancelEvent } from "@/actions/cancel-event";
 import { prisma } from "@/lib/db";
 import { describe, it, expect, vi } from "vitest";
 
