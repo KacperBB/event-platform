@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
+import { DeleteEventButton } from "./DeleteEventButton";
 
 interface OrganizerPanelProps {
   userId: string;
@@ -47,7 +48,7 @@ const OrganizerPanel = async ({ userId }: OrganizerPanelProps) => {
               <Badge
                 variant={event.status === "PUBLISHED" ? "default" : "secondary"}
               >
-                {event.status === "PUBLISHED" ? "Opublikowane" : "Szkic"}
+                {event.status}
               </Badge>
             </div>
 
@@ -70,14 +71,7 @@ const OrganizerPanel = async ({ userId }: OrganizerPanelProps) => {
               </Link>
             </Button>
 
-            <Button
-              variant="outline"
-              size="icon"
-              className="text-red-500 hover:bg-red-50"
-              title="Usuń"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+            <DeleteEventButton id={event.id} />
           </div>
         </div>
       ))}

@@ -2,9 +2,8 @@ import { prisma } from "@/lib/db";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, Ticket } from "lucide-react";
-import Link from "next/link";
+import { MapPin, Calendar, Ticket, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils"; // Narzędzie Shadcn do klas CSS
 
 export async function UserTickets({ userId }: { userId: string }) {
   const bookings = await prisma.booking.findMany({
@@ -19,67 +18,85 @@ export async function UserTickets({ userId }: { userId: string }) {
 
   if (bookings.length === 0) {
     return (
-      <div className="text-center py-12 border-2 border-dashed rounded-lg">
-        <p className="text-muted-foreground">
-          Nie masz jeszcze żadnych biletów.
-        </p>
-        <Button asChild className="mt-4" variant="outline">
-          <Link href="/">Przeglądaj wydarzenia</Link>
-        </Button>
+      <div className="text-center py-10 border-2 border-dashed rounded-lg">
+        Nie masz biletów.
       </div>
     );
   }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {bookings.map((booking) => (
-        <Card
-          key={booking.id}
-          className="overflow-hidden border-l-4 border-l-primary"
-        >
-          <CardContent className="p-5">
-            <div className="flex justify-between items-start mb-4">
-              <div className="bg-primary/10 p-2 rounded-lg">
-                <Ticket className="w-5 h-5 text-primary" />
-              </div>
-              <span className="text-[10px] font-mono text-muted-foreground uppercase">
-                ID: {booking.id.slice(-8)}
-              </span>
-            </div>
+      {bookings.map((booking) => {
+        const isCancelled = booking.event.status === "CANCELLED";
 
-            <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-1">
-              {booking.event.title}
-            </h3>
+        return (
+          <Card
+            key={booking.id}
+            className={cn(
+              "overflow-hidden transition-all",
+              isCancelled
+                ? "opacity-60 grayscale bg-slate-50 border-slate-200"
+                : "border-l-4 border-l-primary shadow-sm"
+            )}
+          >
+            <CardContent className="p-5">
+              <div className="flex justify-between items-start mb-4">
+                <div
+                  className={cn(
+                    "p-2 rounded-lg",
+                    isCancelled ? "bg-slate-200" : "bg-primary/10"
+                  )}
+                >
+                  <Ticket
+                    className={cn(
+                      "w-5 h-5",
+                      isCancelled ? "text-slate-500" : "text-primary"
+                    )}
+                  />
+                </div>
+                {isCancelled && (
+                  <div className="flex items-center gap-1 text-red-600 text-[10px] font-bold uppercase bg-red-50 px-2 py-1 rounded border border-red-200">
+                    <AlertCircle className="w-3 h-3" /> Odwołane
+                  </div>
+                )}
+              </div>
 
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Calendar className="w-4 h-4 mr-2 shrink-0" />
-                {format(new Date(booking.event.date), "PPP", { locale: pl })}
-              </div>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4 mr-2 shrink-0" />
-                <span className="line-clamp-1">{booking.event.address}</span>
-              </div>
-            </div>
+              <h3
+                className={cn(
+                  "font-bold text-lg mb-2 line-clamp-1",
+                  isCancelled &&
+                    "text-slate-600 line-through decoration-slate-400"
+                )}
+              >
+                {booking.event.title}
+              </h3>
 
-            <div className="pt-4 border-t flex items-center justify-between">
-              <div>
-                <p className="text-[10px] uppercase text-muted-foreground font-semibold">
-                  Status
-                </p>
-                <span className="text-xs font-medium text-green-600">
-                  Opłacono
-                </span>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  {format(new Date(booking.event.date), "PPP", { locale: pl })}
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <MapPin className="w-4 h-4 mr-2" />
+                  {booking.event.address}
+                </div>
               </div>
-              <Button size="sm" asChild>
-                <Link href={`/events/${booking.eventId}/ticket/${booking.id}`}>
-                  Pokaż bilet
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+
+              <div className="pt-4 border-t text-center">
+                {isCancelled ? (
+                  <p className="text-xs font-medium text-slate-500 italic">
+                    Organizator odwołał to wydarzenie.
+                  </p>
+                ) : (
+                  <p className="text-xs font-semibold text-green-600">
+                    Bilet jest ważny
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }
