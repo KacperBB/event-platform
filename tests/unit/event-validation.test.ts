@@ -5,6 +5,8 @@ describe("EventSchema - Walidacja dat", () => {
   const futureDate = new Date("2025-12-30T20:00:00");
   const earlierDate = new Date("2025-12-30T10:00:00");
   const laterDate = new Date("2025-12-31T10:00:00");
+  const validThumbnail =
+    "https://res.cloudinary.com/demo/image/upload/sample.jpg";
 
   it.each([
     {
@@ -13,9 +15,12 @@ describe("EventSchema - Walidacja dat", () => {
         title: "Koncert",
         date: futureDate,
         bookingDeadline: earlierDate,
-        address: "Warszawa", lat: 52, lng: 21
+        thumbnail: validThumbnail,
+        address: "Warszawa",
+        lat: 52,
+        lng: 21,
       },
-      shouldPass: true
+      shouldPass: true,
     },
     {
       case: "Błędne daty (deadline po wydarzeniu)",
@@ -23,19 +28,34 @@ describe("EventSchema - Walidacja dat", () => {
         title: "Koncert",
         date: futureDate,
         bookingDeadline: laterDate,
-        address: "Warszawa", lat: 52, lng: 21
+        address: "Warszawa",
+        lat: 52,
+        thumbnail: validThumbnail,
+        lng: 21,
       },
-      shouldPass: false
+      shouldPass: false,
     },
     {
       case: "Brak deadline'u (opcjonalny)",
       data: {
         title: "Koncert",
         date: futureDate,
-        address: "Warszawa", lat: 52, lng: 21
+        address: "Warszawa",
+        lat: 52,
+        thumbnail: validThumbnail,
+        lng: 21,
       },
-      shouldPass: true
-    }
+      shouldPass: true,
+    },
+    {
+      case: "Brak thumbnaila",
+      shouldPass: false,
+      data: {
+        title: "Koncert",
+        date: futureDate,
+        address: "Warszawa",
+      },
+    },
   ])("$case -> success should be $shouldPass", ({ data, shouldPass }) => {
     const result = EventSchema.safeParse(data);
     expect(result.success).toBe(shouldPass);

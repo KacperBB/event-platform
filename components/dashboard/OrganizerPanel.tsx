@@ -59,9 +59,7 @@ const OrganizerPanel = async ({ userId }: OrganizerPanelProps) => {
                 {event.image ? (
                   <EventImage src={event.image} alt={event.title} />
                 ) : (
-                  <div className="w-full h-full bg-slate-100 rounded-md flex items-center justify-center">
-                    <Calendar className="text-slate-400 w-8 h-8" />
-                  </div>
+                  <div className="w-20 h-20 bg-gray-200" />
                 )}
               </div>
               <div className="flex items-center gap-1">

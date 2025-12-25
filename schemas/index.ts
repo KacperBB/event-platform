@@ -44,10 +44,7 @@ export const EventSchema = z
       .refine((val) => val !== 0, "Proszę wybrać adres z podpowiedzi"),
     maxCapacity: z.number().optional().nullable(),
     bookingDeadline: z.date().optional().nullable(),
-    thumbnail: z
-      .string({ required_error: "Zdjęcie jest wymagane" })
-      .url("To nie jest poprawny adres URL")
-      .min(1, "Proszę dodać zdjęcie wydarzenia"),
+    thumbnail: z.string().url("Błędny URL").min(1, "Wymagany"),
     isPublished: z.boolean().default(false),
     images: z.array(z.string()).optional(),
     status: z.nativeEnum(EventStatus).optional().default(EventStatus.DRAFT),
