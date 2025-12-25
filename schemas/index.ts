@@ -44,7 +44,11 @@ export const EventSchema = z
       .refine((val) => val !== 0, "Proszę wybrać adres z podpowiedzi"),
     maxCapacity: z.number().optional().nullable(),
     bookingDeadline: z.date().optional().nullable(),
-    thumbnail: z.string().optional().nullable(),
+    thumbnail: z
+      .string()
+      .url("To nie jest poprawny adres URL")
+      .optional()
+      .or(z.literal("")),
     isPublished: z.boolean().default(false),
     images: z.array(z.string()).optional(),
     status: z.nativeEnum(EventStatus).optional().default(EventStatus.DRAFT),
