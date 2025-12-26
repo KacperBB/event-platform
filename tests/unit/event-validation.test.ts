@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { EventSchema } from "@/schemas";
 
 describe("EventSchema - Walidacja dat", () => {
+  const now = new Date();
   const futureDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   const earlierDate = new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000);
   const laterDate = new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000);
