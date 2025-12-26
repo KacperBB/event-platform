@@ -53,7 +53,12 @@ const OrganizerPanel = async ({ userId }: OrganizerPanelProps) => {
                 {event.status}
               </Badge>
             </div>
-
+            <div className="flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              {format(new Date(event.date), "dd MMMM yyyy 'o' HH:mm", {
+                locale: pl,
+              })}
+            </div>
             <div className="flex flex-col sm:flex-row sm:gap-4 text-sm text-muted-foreground">
               <div className="relative w-20 h-20 flex-shrink-0">
                 {event.image ? (

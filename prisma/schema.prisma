@@ -53,6 +53,8 @@ model Event {
   description     String?
   image           String
   date            DateTime
+  startTime       DateTime
+
   status          EventStatus @default(DRAFT)
   //Localization
   address       String
@@ -70,6 +72,10 @@ model Event {
   moderators    User[]      @relation("EventModerators")
   bookings      Booking[]
   bookingDeadline   DateTime?
+
+  parentId      String?
+  parent        Event?      @relation("EventToSubEvents", fields: [parentId], references: [id], onDelete: Cascade)
+  subEvents     Event[]     @relation("EventToSubEvents")
 }
 
 model Booking {

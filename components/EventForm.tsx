@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useState, useRef, useTransition, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
 import { format } from "date-fns";
@@ -24,7 +24,13 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { TiptapEditor } from "./TiptapEditor";
-import { FormField } from "./ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
 import { updateEvent } from "@/actions/update-event";
 import { ImageUpload } from "./ImageUpload";
 import { pl } from "date-fns/locale";
@@ -42,15 +48,8 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
 
   const [hasCapacity, setHasCapacity] = useState(!!initialData?.maxCapacity);
   const [hasDeadline, setHasDeadline] = useState(
-    !!initialData?.bookingDeadLine
+    !!initialData?.bookingDeadline
   );
-
-  useEffect(() => {
-    if (initialData) {
-      setHasCapacity(!!initialData.maxCapacity);
-      setHasDeadline(!!initialData.bookingDeadline);
-    }
-  }, [initialData]);
 
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
@@ -58,6 +57,14 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries,
   });
+
+  const getTimeString = (date: Date | string | null) => {
+    if (!date) return "18:00";
+    const d = new Date(date);
+    return `${String(d.getHours()).padStart(2, "0")}:${String(
+      d.getMinutes()
+    ).padStart(2, "0")}`;
+  };
 
   const form = useForm<z.infer<typeof EventSchema>>({
     resolver: zodResolver(EventSchema),
@@ -67,6 +74,9 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
           isPublished: initialData.status === "PUBLISHED",
           thumbnail: initialData.image || "",
           date: initialData.date ? new Date(initialData.date) : undefined,
+          startTime: initialData.startTime
+            ? getTimeString(initialData.startTime)
+            : "18:00",
           bookingDeadline: initialData.bookingDeadline
             ? new Date(initialData.bookingDeadline)
             : undefined,
@@ -78,6 +88,7 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
           lng: 0,
           description: "",
           thumbnail: "",
+          startTime: "18:00",
           maxCapacity: undefined,
           isPublished: false,
         },
@@ -166,6 +177,7 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Autocomplete dla adresu */}
         <Autocomplete
           onLoad={(ref) => (autocompleteRef.current = ref)}
           onPlaceChanged={() => {
@@ -177,30 +189,50 @@ export const EventForm = ({ initialData, id }: EventFormProps) => {
             }
           }}
         >
-          <Input
-            placeholder="Gdzie odbędzie się wydarzenie?"
-            {...form.register("address")}
-          />
+          <div className="space-y-2">
+            <Label>Lokalizacja</Label>
+            <Input
+              placeholder="Gdzie odbędzie się wydarzenie?"
+              {...form.register("address")}
+              disabled={isPending}
+            />
+          </div>
         </Autocomplete>
 
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start">
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {form.watch("date")
-                ? format(form.getValues("date"), "PPP")
-                : "Data wydarzenia"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={form.watch("date")}
-              onSelect={(d) => form.setValue("date", d as Date)}
-              disabled={(date) => date < today}
+        <div className="space-y-2">
+          <Label>Data i godzina</Label>
+          <div className="flex gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="flex-1 justify-start">
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {form.watch("date")
+                    ? format(form.watch("date"), "PPP", { locale: pl })
+                    : "Wybierz datę"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={form.watch("date")}
+                  onSelect={(d) => form.setValue("date", d as Date)}
+                  disabled={(date) => date < today}
+                />
+              </PopoverContent>
+            </Popover>
+
+            {/* POLE START TIME */}
+            <Input
+              type="time"
+              className="w-[120px]"
+              {...form.register("startTime")}
+              disabled={isPending}
             />
-          </PopoverContent>
-        </Popover>
+          </div>
+          {errors.startTime && (
+            <p className="text-xs text-red-500">{errors.startTime.message}</p>
+          )}
+        </div>
       </div>
 
       <div className="space-y-6 bg-slate-50 p-6 rounded-xl border">

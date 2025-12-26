@@ -31,8 +31,16 @@ export const LoginSchema = z.object({
 export const EventSchema = z
   .object({
     title: z.string().min(3, "Tytuł musi mieć min. 3 znaki").max(100),
-    description: z.string().min(10, "Opis jest za krótki").max(3000).optional(),
+    description: z
+      .string()
+      .min(10, "Opis jest za krótki")
+      .max(3000)
+      .optional()
+      .or(z.literal("")),
     address: z.string().min(5, "Podaj dokładny adres"),
+    // Poprawiona definicja startTime
+    startTime: z.string().min(1, "Godzina rozpoczęcia jest wymagana"),
+    // Poprawiona definicja date
     date: z.date({
       required_error: "Data wydarzenia jest wymagana",
     }),
@@ -48,34 +56,49 @@ export const EventSchema = z
     isPublished: z.boolean().default(false),
     images: z.array(z.string()).optional(),
     status: z.nativeEnum(EventStatus).optional().default(EventStatus.DRAFT),
+    locations: z
+      .array(
+        z.object({
+          date: z.date(),
+          startTime: z.string(),
+          address: z.string(),
+          lat: z.number(),
+          lng: z.number(),
+        })
+      )
+      .optional(),
   })
   .superRefine((data, ctx) => {
     const now = new Date();
 
-    if (data.date && data.date < now) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Data wydarzenia musi być w przyszłości",
-        path: ["date"],
-      });
-    }
+    if (data.date && data.startTime) {
+      const [hours, minutes] = data.startTime.split(":").map(Number);
+      const eventDateTime = new Date(data.date);
+      eventDateTime.setHours(hours, minutes);
 
-    if (data.bookingDeadline) {
-      if (data.bookingDeadline < now) {
+      if (eventDateTime < now) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Termin rezerwacji nie może być w przeszłości",
-          path: ["bookingDeadline"],
+          message: "Data i godzina wydarzenia muszą być w przyszłości",
+          path: ["date"],
         });
       }
 
-      if (data.date && data.bookingDeadline >= data.date) {
+      if (data.bookingDeadline && data.bookingDeadline >= eventDateTime) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
-            "Termin rezerwacji musi być wcześniejszy niż data wydarzenia",
+            "Termin rezerwacji musi być wcześniejszy niż start wydarzenia",
           path: ["bookingDeadline"],
         });
       }
+    }
+
+    if (data.bookingDeadline && data.bookingDeadline < now) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Termin rezerwacji nie może być w przeszłości",
+        path: ["bookingDeadline"],
+      });
     }
   });
