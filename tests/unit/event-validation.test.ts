@@ -2,9 +2,9 @@ import { describe, it, expect } from "vitest";
 import { EventSchema } from "@/schemas";
 
 describe("EventSchema - Walidacja dat", () => {
-  const futureDate = new Date("2025-12-30T20:00:00");
-  const earlierDate = new Date("2025-12-30T10:00:00");
-  const laterDate = new Date("2025-12-31T10:00:00");
+  const futureDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const earlierDate = new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000);
+  const laterDate = new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000);
   const validThumbnail =
     "https://res.cloudinary.com/demo/image/upload/sample.jpg";
 
