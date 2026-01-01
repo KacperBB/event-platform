@@ -55,7 +55,7 @@ const OrganizerPanel = async ({ userId }: OrganizerPanelProps) => {
             </div>
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              {format(new Date(event.date), "dd MMMM yyyy 'o' HH:mm", {
+              {format(new Date(event.date), "dd MMMM yyyy 'o'", {
                 locale: pl,
               })}
             </div>
