@@ -23,7 +23,7 @@ export default async function Home() {
 
   return (
     <div className="container mx-auto py-2">
-      <section className="w-1/2 h-[70vh] min-h-[400px] relative border-1 rounded-lg">
+      <section className="w-1/3 h-[70vh] min-h-[400px] relativ">
         <MainMap events={events} />
       </section>
     </div>

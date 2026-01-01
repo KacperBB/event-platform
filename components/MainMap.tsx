@@ -1,28 +1,9 @@
 "use client";
 
-import {
-  useJsApiLoader,
-  GoogleMap,
-  MarkerF,
-  InfoWindowF,
-} from "@react-google-maps/api";
+import { useJsApiLoader, GoogleMap, MarkerF } from "@react-google-maps/api";
 import { useCallback, useMemo, useRef } from "react";
 import { Loader2 } from "lucide-react";
-
-interface MainMapProps {
-  events: {
-    id: string;
-    title: true;
-    lat: number;
-    lng: number;
-    address: string;
-  }[];
-}
-
-const mapContainerStyle = {
-  width: "100%",
-  height: "100%",
-};
+import { NearMeButton } from "./NearMeButton";
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -106,25 +87,29 @@ export const MainMap = ({ events }: any) => {
 
   return (
     <div className="w-full h-full ">
-      <div className="w-full h-full rounded-lg border-[1px] border-slate-200 overflow-hidden shadow-sm">
-        <GoogleMap
-          mapContainerStyle={{ width: "100%", height: "100%" }}
-          center={center}
-          zoom={12}
-          options={mapOptions}
-          onLoad={onLoad}
-        >
-          {events.map((event: any) => (
-            <MarkerF
-              key={event.id}
-              position={{ lat: event.lat, lng: event.lng }}
-              icon={{
-                url: "/blue-pin.png",
-                scaledSize: new google.maps.Size(40, 40),
-              }}
-            />
-          ))}
-        </GoogleMap>
+      <div className="w-full h-full rounded-[2rem]  overflow-hidden relative shadow-md">
+        <div className="w-full h-[calc(100%+30px)] -mb-[30px]">
+          <NearMeButton mapRef={mapRef} />
+
+          <GoogleMap
+            mapContainerStyle={{ width: "100%", height: "100%" }}
+            center={center}
+            zoom={12}
+            options={mapOptions}
+            onLoad={onLoad}
+          >
+            {events.map((event: any) => (
+              <MarkerF
+                key={event.id}
+                position={{ lat: event.lat, lng: event.lng }}
+                icon={{
+                  url: "/blue-pin.png",
+                  scaledSize: new google.maps.Size(40, 40),
+                }}
+              />
+            ))}
+          </GoogleMap>
+        </div>
       </div>
     </div>
   );
