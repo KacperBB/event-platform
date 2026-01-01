@@ -56,6 +56,7 @@ export const EventSchema = z
     isPublished: z.boolean().default(false),
     images: z.array(z.string()).optional(),
     status: z.nativeEnum(EventStatus).optional().default(EventStatus.DRAFT),
+    parentId: z.string().optional().nullable(),
     locations: z
       .array(
         z.object({

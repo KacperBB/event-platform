@@ -14,6 +14,11 @@ export default async function EditEventPage({
     where: { id: eventId },
   });
 
+  const parents = await prisma.event.findMany({
+    where: { parentId: null },
+    select: { id: true, title: true },
+  });
+
   if (!event) notFound();
   if (event.creatorId !== session?.user?.id) redirect("/");
 
@@ -21,7 +26,7 @@ export default async function EditEventPage({
     <div className="container py-10">
       <h1 className="text-2xl font-bold mb-8">Edytuj wydarzenie</h1>
       <div> {event?.status} </div>
-      <EventForm initialData={event} id={event.id} />
+      <EventForm initialData={event} id={event.id} parents={parents} />
     </div>
   );
 }

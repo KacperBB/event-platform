@@ -1,5 +1,11 @@
 // app/events/new/page.tsx
 import { EventForm } from "@/components/EventForm";
+import { prisma } from "@/lib/db";
+
+const potentialParents = await prisma.event.findMany({
+  where: { parentId: null },
+  select: { id: true, title: true },
+});
 
 export default function NewEventPage() {
   return (
@@ -10,7 +16,7 @@ export default function NewEventPage() {
           Wypełnij poniższe dane, aby dodać swoje wydarzenie do mapy.
         </p>
       </div>
-      
+
       <div className="bg-card p-6 rounded-lg border shadow-sm">
         <EventForm />
       </div>

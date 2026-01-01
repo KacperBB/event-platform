@@ -37,6 +37,8 @@ model User {
   isverified      Boolean     @default(false)
   description     String?
   status          EventStatus @default(DRAFT)
+  favorites       Favorite[]
+  notifications   Notification[]
 
   //Relations
   organizedEvents   Event[]   @relation("EventOrganizer")
@@ -76,6 +78,8 @@ model Event {
   parentId      String?
   parent        Event?      @relation("EventToSubEvents", fields: [parentId], references: [id], onDelete: Cascade)
   subEvents     Event[]     @relation("EventToSubEvents")
+  favoritedBy   Favorite[]
+  subscribers   NotificationSubscription[]
 }
 
 model Booking {
@@ -122,7 +126,35 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  eventId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
+  @@unique([userId, eventId]) 
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?  
+  createdAt DateTime @default(now())
+}
+model NotificationSubscription {
+  id      String @id @default(cuid())
+  userId  String
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
 
 generator client {
   provider = "prisma-client-js"

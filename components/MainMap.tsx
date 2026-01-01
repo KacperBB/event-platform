@@ -5,6 +5,8 @@ import { useCallback, useMemo, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import { NearMeButton } from "./NearMeButton";
 
+const libraries: ("places" | "maps" | "geometry")[] = ["places"];
+
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
   clickableIcons: false,
@@ -22,7 +24,7 @@ const mapOptions: google.maps.MapOptions = {
     {
       featureType: "landscape",
       elementType: "geometry",
-      stylers: [{ color: "#f5f5f5" }],
+      stylers: [{ color: "green" }],
     },
     {
       featureType: "road",
@@ -47,6 +49,7 @@ export const MainMap = ({ events }: any) => {
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    libraries,
   });
 
   const center = useMemo(() => {
