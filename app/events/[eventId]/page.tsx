@@ -12,7 +12,6 @@ export default async function EventPage({
 }) {
   const { eventId } = await params;
 
-  // 1. Pobieramy konkretny event, który edytujemy
   const event = await prisma.event.findUnique({
     where: { id: eventId },
     include: { creator: true, bookings: true },
@@ -50,7 +49,6 @@ export default async function EventPage({
 
   return (
     <div className="container max-w-5xl py-10 space-y-8">
-      {/* Banner / Thumbnail */}
       {event.thumbnail && (
         <div className="w-full h-[300px] overflow-hidden rounded-3xl border shadow-sm">
           <img

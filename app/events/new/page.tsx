@@ -1,10 +1,15 @@
-// app/events/new/page.tsx
 import { EventForm } from "@/components/EventForm";
 import { prisma } from "@/lib/db";
 
 const potentialParents = await prisma.event.findMany({
-  where: { parentId: null },
-  select: { id: true, title: true },
+  where: {
+    parentId: null,
+  },
+  select: {
+    id: true,
+    title: true,
+    date: true,
+  },
 });
 
 export default function NewEventPage() {
@@ -18,7 +23,7 @@ export default function NewEventPage() {
       </div>
 
       <div className="bg-card p-6 rounded-lg border shadow-sm">
-        <EventForm />
+        <EventForm parents={potentialParents} />
       </div>
     </div>
   );

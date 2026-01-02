@@ -36,13 +36,7 @@ import {
 import { updateEvent } from "@/actions/update-event";
 import { ImageUpload } from "./ImageUpload";
 import { pl } from "date-fns/locale";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ParentSelectorModal } from "./ParentSelectorModal";
 
 const libraries: "places"[] = ["places"];
 
@@ -154,28 +148,19 @@ export const EventForm = ({
             control={form.control}
             name="parentId"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Wydarzenie nadrzędne</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value || undefined}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Wybierz wydarzenie główne" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="none">
-                      Brak (wydarzenie główne)
-                    </SelectItem>
-                    {parents.map((parent) => (
-                      <SelectItem key={parent.id} value={parent.id}>
-                        {parent.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <FormItem className="flex flex-col">
+                <FormLabel>Wydarzenie nadrzędne (opcjonalnie)</FormLabel>
+                <FormControl>
+                  <ParentSelectorModal
+                    value={field.value}
+                    onChange={field.onChange}
+                    parents={parents}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Jeśli to wydarzenie jest częścią większego cyklu, wybierz go
+                  tutaj.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
