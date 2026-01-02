@@ -11,12 +11,28 @@ export default async function EventPage({
   params: Promise<{ eventId: string }>;
 }) {
   const { eventId } = await params;
+
+  // 1. Pobieramy konkretny event, który edytujemy
   const event = await prisma.event.findUnique({
     where: { id: eventId },
     include: { creator: true, bookings: true },
   });
 
   if (!event) notFound();
+
+  const potentialParents = await prisma.event.findMany({
+    where: {
+      parentId: null,
+      NOT: {
+        id: eventId,
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      date: true,
+    },
+  });
 
   const totalOccupancy = event.bookings.reduce((sum, b) => {
     const isExpired =
