@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { UserButton } from "./auth/UserButton";
 import { Button } from "./ui/button";
 import { PlusCircle } from "lucide-react";
+import { CartSheet } from "./cart/CartSheet";
 
 export const Navbar = async () => {
   const session = await auth();
@@ -33,6 +34,7 @@ export const Navbar = async () => {
             </Link>
           )}
         </div>
+        <CartSheet />
       </div>
 
       <div className="flex items-center gap-x-4">

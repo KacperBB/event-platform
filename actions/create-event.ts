@@ -62,7 +62,7 @@ export const createEvent = async (values: z.infer<typeof EventSchema>) => {
         bookingDeadline: data.bookingDeadline,
         maxCapacity: data.maxCapacity,
         status: eventStatus,
-        parentId: data.parentId,
+        parentId: data.parentId === "none" ? null : data.parentId,
       },
     });
 

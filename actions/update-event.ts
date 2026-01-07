@@ -34,7 +34,8 @@ export const updateEvent = async (
       data: {
         ...data,
         status: eventStatus,
-        image: thumbnail || null,
+        image: thumbnail || undefined,
+        parentId: data.parentId === "none" ? null : data.parentId,
       },
     });
 
@@ -43,7 +44,7 @@ export const updateEvent = async (
 
     return { success: "Wydarzenie zaktualizowane!" };
   } catch (error) {
-    console.error(error); // Warto widzieć błąd w konsoli serwera
+    console.error(error); 
     return { error: "Błąd podczas aktualizacji bazy danych" };
   }
 };

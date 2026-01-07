@@ -14,7 +14,7 @@ export default async function EventPage({
 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
-    include: { creator: true, bookings: true },
+    include: { creator: true, bookings: true,},
   });
 
   if (!event) notFound();
