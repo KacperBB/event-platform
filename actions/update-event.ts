@@ -8,7 +8,7 @@ import * as z from "zod";
 
 export const updateEvent = async (
   id: string,
-  values: z.infer<typeof EventSchema>
+  values: z.infer<typeof EventSchema>,
 ) => {
   const session = await auth();
 
@@ -22,7 +22,8 @@ export const updateEvent = async (
   }
 
   try {
-    const { isPublished, thumbnail, ...data } = validatedFields.data;
+    const { isPublished, thumbnail, categories, ...data } =
+      validatedFields.data;
 
     const eventStatus = isPublished ? "PUBLISHED" : "DRAFT";
 
@@ -36,6 +37,12 @@ export const updateEvent = async (
         status: eventStatus,
         image: thumbnail || undefined,
         parentId: data.parentId === "none" ? null : data.parentId,
+
+        categories: {
+          set: categories.map((catId) => ({ id: catId })),
+        },
+
+        price: data.price,
       },
     });
 
@@ -44,7 +51,7 @@ export const updateEvent = async (
 
     return { success: "Wydarzenie zaktualizowane!" };
   } catch (error) {
-    console.error(error); 
+    console.error(error);
     return { error: "Błąd podczas aktualizacji bazy danych" };
   }
 };

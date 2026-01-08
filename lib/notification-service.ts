@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 export const notifySubscribers = async (
   eventId: string,
   title: string,
-  message: string
+  message: string,
 ) => {
   const subscriptions = await prisma.notificationSubscription.findMany({
     where: { eventId },

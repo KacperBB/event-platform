@@ -66,7 +66,11 @@ export const RegisterForm = () => {
                 <FormItem>
                   <FormLabel>Imię i nazwisko</FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={isPending} placeholder="Jan Kowalski" />
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder="Jan Kowalski"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -79,7 +83,12 @@ export const RegisterForm = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={isPending} placeholder="jan.kowalski@example.com" type="email" />
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder="jan.kowalski@example.com"
+                      type="email"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -92,7 +101,12 @@ export const RegisterForm = () => {
                 <FormItem>
                   <FormLabel>Hasło</FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={isPending} placeholder="******" type="password" />
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder="******"
+                      type="password"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -63,6 +63,10 @@ export const createEvent = async (values: z.infer<typeof EventSchema>) => {
         maxCapacity: data.maxCapacity,
         status: eventStatus,
         parentId: data.parentId === "none" ? null : data.parentId,
+        categories: {
+          connect: data.categories.map((catId) => ({ id: catId })),
+        },
+        price: data.price,
       },
     });
 

@@ -10,7 +10,7 @@ import { CalendarIcon, Loader2, ImagePlus, Users } from "lucide-react";
 import { toast } from "sonner";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-
+import { cn } from "@/lib/utils";
 import { EventSchema } from "@/schemas";
 import { createEvent } from "@/actions/create-event";
 import { Button } from "@/components/ui/button";
@@ -37,26 +37,31 @@ import { updateEvent } from "@/actions/update-event";
 import { ImageUpload } from "./ImageUpload";
 import { pl } from "date-fns/locale";
 import { ParentSelectorModal } from "./ParentSelectorModal";
+import { Checkbox } from "@radix-ui/react-checkbox";
 
 const libraries: "places"[] = ["places"];
 
 interface EventFormProps {
   initialData?: any;
   id?: string;
+  availableCategories: { id: string; name: string }[];
   parents?: { id: string; title: string }[];
 }
 
 export const EventForm = ({
   initialData,
   id,
+  availableCategories,
   parents = [],
 }: EventFormProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
+  const [isFree, setIsFree] = useState(
+    initialData ? initialData.price === 0 : true,
+  );
   const [hasCapacity, setHasCapacity] = useState(!!initialData?.maxCapacity);
   const [hasDeadline, setHasDeadline] = useState(
-    !!initialData?.bookingDeadline
+    !!initialData?.bookingDeadline,
   );
 
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -70,7 +75,7 @@ export const EventForm = ({
     if (!date) return "18:00";
     const d = new Date(date);
     return `${String(d.getHours()).padStart(2, "0")}:${String(
-      d.getMinutes()
+      d.getMinutes(),
     ).padStart(2, "0")}`;
   };
 
@@ -89,6 +94,8 @@ export const EventForm = ({
             ? new Date(initialData.bookingDeadline)
             : undefined,
           parentId: initialData.parentId,
+          categories: initialData.categories || [],
+          price: initialData.price,
         }
       : {
           title: "",
@@ -101,6 +108,8 @@ export const EventForm = ({
           maxCapacity: undefined,
           isPublished: false,
           parentId: null,
+          categories: [],
+          price: 0,
         },
   });
 
@@ -170,7 +179,47 @@ export const EventForm = ({
             placeholder="Nazwa wydarzenia"
             disabled={isPending}
           />
+          {availableCategories.map((category) => (
+            <FormField
+              key={category.id}
+              control={form.control}
+              name="categories"
+              render={({ field }) => {
+                const currentValues = field.value || [];
+                const isChecked = currentValues.includes(category.id);
 
+                return (
+                  <FormItem
+                    key={category.id}
+                    className={cn(
+                      "flex flex-row items-start space-x-3 space-y-0 rounded-xl border p-4 transition-all cursor-pointer",
+                      isChecked
+                        ? "border-sky-600 bg-sky-50 shadow-md ring-1 ring-sky-600"
+                        : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50",
+                    )}
+                  >
+                    <FormControl>
+                      <Checkbox
+                        checked={isChecked}
+                        onCheckedChange={(checked) => {
+                          return checked
+                            ? field.onChange([...currentValues, category.id])
+                            : field.onChange(
+                                currentValues.filter(
+                                  (value: string) => value !== category.id,
+                                ),
+                              );
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel className="font-normal cursor-pointer w-full h-full flex items-center">
+                      {category.name}
+                    </FormLabel>
+                  </FormItem>
+                );
+              }}
+            />
+          ))}
           <div className="flex gap-4">
             <FormField
               control={form.control}
@@ -266,7 +315,57 @@ export const EventForm = ({
             )}
           </div>
         </div>
+        <div className="space-y-6 bg-slate-50 p-6 rounded-xl border mb-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label className="text-base">Cena biletów</Label>
+              <p className="text-xs text-muted-foreground">
+                Czy wydarzenie jest płatne?
+              </p>
+            </div>
+            <Switch
+              checked={!isFree}
+              onCheckedChange={(checked) => {
+                setIsFree(!checked);
+                if (!checked) {
+                  form.setValue("price", 0);
+                }
+              }}
+            />
+          </div>
 
+          {!isFree && (
+            <div className="animate-in fade-in slide-in-from-top-1 pt-4">
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cena za bilet (PLN)</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-2.5 text-muted-foreground font-bold">
+                          PLN
+                        </span>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          className="pl-12 font-mono text-lg"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormDescription>
+                      To jest cena brutto dla jednego uczestnika.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+        </div>
         <div className="space-y-6 bg-slate-50 p-6 rounded-xl border">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
@@ -315,7 +414,7 @@ export const EventForm = ({
                       ? format(
                           new Date(form.watch("bookingDeadline")!),
                           "PPP HH:mm",
-                          { locale: pl }
+                          { locale: pl },
                         )
                       : "Wybierz termin zakończenia"}
                   </Button>

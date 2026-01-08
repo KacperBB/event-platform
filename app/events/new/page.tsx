@@ -12,6 +12,11 @@ const potentialParents = await prisma.event.findMany({
   },
 });
 
+const categories = await prisma.category.findMany({
+  orderBy: { name: "asc" },
+  select: { id: true, name: true },
+});
+
 export default function NewEventPage() {
   return (
     <div className="container max-w-3xl py-10">
@@ -23,7 +28,10 @@ export default function NewEventPage() {
       </div>
 
       <div className="bg-card p-6 rounded-lg border shadow-sm">
-        <EventForm parents={potentialParents} />
+        <EventForm
+          parents={potentialParents}
+          availableCategories={categories}
+        />
       </div>
     </div>
   );

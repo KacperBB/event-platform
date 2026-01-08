@@ -1,8 +1,7 @@
 "use client";
 
-import { ShoppingBag, Trash2, X } from "lucide-react";
+import { ShoppingBag, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useCart } from "@/hooks/use-cart";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
+import { useCart } from "@/actions/use-cart";
 
 export const CartSheet = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -58,14 +58,21 @@ export const CartSheet = () => {
             <ScrollArea className="h-[60vh] pr-4">
               <ul className="space-y-4">
                 {cart.items.map((item) => (
-                  <li key={item.id} className="flex justify-between items-start bg-slate-50 p-4 rounded-xl border">
+                  <li
+                    key={item.id}
+                    className="flex justify-between items-start bg-slate-50 p-4 rounded-xl border"
+                  >
                     <div className="space-y-1">
                       <h4 className="font-semibold text-sm">{item.title}</h4>
                       <p className="text-xs text-muted-foreground">
-                        {item.date ? format(new Date(item.date), "dd.MM.yyyy") : "Bilet otwarty"}
+                        {item.date
+                          ? format(new Date(item.date), "dd.MM.yyyy")
+                          : "Bilet otwarty"}
                       </p>
                       <p className="text-xs text-muted-foreground font-medium text-sky-600">
-                        {Number(item.price) === 0 ? "Bezpłatny" : `${item.price} PLN`}
+                        {Number(item.price) === 0
+                          ? "Bezpłatny"
+                          : `${item.price} PLN`}
                       </p>
                     </div>
                     <Button

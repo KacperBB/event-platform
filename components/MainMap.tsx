@@ -62,7 +62,7 @@ export const MainMap = ({ events }: any) => {
       let currentDistance = 0;
       events.forEach((e2: any) => {
         currentDistance += Math.sqrt(
-          Math.pow(e1.lat - e2.lat, 2) + Math.pow(e1.lng - e2.lng, 2)
+          Math.pow(e1.lat - e2.lat, 2) + Math.pow(e1.lng - e2.lng, 2),
         );
       });
       if (currentDistance < minTotalDistance) {
@@ -83,7 +83,7 @@ export const MainMap = ({ events }: any) => {
         events.forEach((e: any) => bounds.extend({ lat: e.lat, lng: e.lng }));
       }
     },
-    [events]
+    [events],
   );
 
   if (!isLoaded) return <Loader2 className="animate-spin" />;

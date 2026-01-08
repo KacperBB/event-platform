@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { toast } from "sonner"; 
+import { toast } from "sonner";
 import { updateHandle } from "@/actions/settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ interface HandleFormProps {
   initialHandle?: string | null;
 }
 
-export  const HandleForm = ({ initialHandle }: HandleFormProps) => {
+export const HandleForm = ({ initialHandle }: HandleFormProps) => {
   const [isPending, startTransition] = useTransition();
 
   const onSubmit = (formData: FormData) => {
@@ -20,7 +20,7 @@ export  const HandleForm = ({ initialHandle }: HandleFormProps) => {
       const result = await updateHandle(newHandle);
 
       if (result?.error) {
-        toast.error(result.error); 
+        toast.error(result.error);
       }
 
       if (result?.success) {

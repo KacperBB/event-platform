@@ -1,8 +1,8 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+}
 
 enum UserRole {
   USER
@@ -46,6 +46,7 @@ model User {
   bookings          Booking[]
   
   accounts          Account[]
+  orders             Order[]   
 }
 
 // Event Model
@@ -56,7 +57,7 @@ model Event {
   image           String
   date            DateTime
   startTime       DateTime
-
+  price           Float       @default(0)
   status          EventStatus @default(DRAFT)
   //Localization
   address       String
@@ -78,8 +79,17 @@ model Event {
   parentId      String?
   parent        Event?      @relation("EventToSubEvents", fields: [parentId], references: [id], onDelete: Cascade)
   subEvents     Event[]     @relation("EventToSubEvents")
-  favoritedBy   Favorite[]
+  favouritedBy   Favorite[]
   subscribers   NotificationSubscription[]
+  categories    Category[]
+}
+
+model Category {
+  id          String @id @default(cuid())
+  name        String @unique
+  color       String?
+
+  events      Event[]
 }
 
 model Booking {
@@ -88,6 +98,7 @@ model Booking {
   status      BookingStatus   @default(PENDING)
   guestsCount Int             @default(1)
   expiresAt   DateTime?
+  pricePaid   Float           @default(0)
   
   //Relations
   userId      String
@@ -95,6 +106,25 @@ model Booking {
 
   eventId     String
   event       Event           @relation(fields: [eventId], references: [id])
+
+  orderId     String?
+  order       Order?          @relation(fields: [orderId], references: [id])
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  
+  totalAmount     Float         
+  status          OrderStatus   @default(PENDING)
+  
+  paymentSessionId String?       @unique 
+  
+  bookings        Booking[]
 }
 
 //Auth.js model

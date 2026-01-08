@@ -40,7 +40,7 @@ describe("Event Management Actions", () => {
       expect.objectContaining({
         where: { id: "event_id_123", creatorId: "user_123" },
         data: { status: "CANCELLED" },
-      })
+      }),
     );
   });
 });

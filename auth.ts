@@ -19,7 +19,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async createUser({ user }) {
       console.log(
         "Tworzenie nowego użytkownika, generuje handle dla:",
-        user.email
+        user.email,
       );
 
       if (user.email) {
@@ -28,7 +28,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .toLowerCase()
           .replace(/[^a-z0-9]/g, "");
         const generatedHandle = `${baseHandle}_${Math.floor(
-          1000 + Math.random() * 9000
+          1000 + Math.random() * 9000,
         )}`;
 
         await prisma.user.update({
@@ -88,7 +88,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const passwordsMatch = await bcrypt.compare(
           credentials.password as string,
-          user.password
+          user.password,
         );
 
         if (passwordsMatch) return user;

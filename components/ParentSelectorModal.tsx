@@ -31,7 +31,7 @@ export const ParentSelectorModal = ({
 
   const selectedParent = parents.find((p) => p.id === value);
   const filteredParents = parents.filter((p) =>
-    p.title.toLowerCase().includes(search.toLowerCase())
+    p.title.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -95,7 +95,7 @@ export const ParentSelectorModal = ({
                 "flex items-center p-3 rounded-xl cursor-pointer border transition-all hover:bg-slate-50",
                 value === parent.id
                   ? "border-sky-500 bg-sky-50"
-                  : "border-transparent"
+                  : "border-transparent",
               )}
             >
               <div className="flex-1">

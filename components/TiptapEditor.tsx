@@ -11,13 +11,18 @@ interface TiptapEditorProps {
   disabled?: boolean;
 }
 
-export const TiptapEditor = ({ value, onChange, disabled }: TiptapEditorProps) => {
+export const TiptapEditor = ({
+  value,
+  onChange,
+  disabled,
+}: TiptapEditorProps) => {
   const editor = useEditor({
     extensions: [StarterKit],
     content: value,
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none min-h-[200px] p-4 border rounded-md bg-white",
+        class:
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none min-h-[200px] p-4 border rounded-md bg-white",
       },
     },
     onUpdate: ({ editor }) => {

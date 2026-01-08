@@ -12,7 +12,7 @@ interface SubEvent {
   title: string;
   date: Date | null;
   startTime: Date | null;
-  address: string; 
+  address: string;
   price?: number;
 }
 
@@ -28,19 +28,20 @@ export const EventAgenda = ({ subEvents }: EventAgendaProps) => {
     const groups: Record<string, SubEvent[]> = {};
 
     subEvents.forEach((event) => {
-      const dateKey = event.date 
-        ? format(new Date(event.date), "yyyy-MM-dd") 
+      const dateKey = event.date
+        ? format(new Date(event.date), "yyyy-MM-dd")
         : "Nieokreślono";
-        
+
       if (!groups[dateKey]) groups[dateKey] = [];
       groups[dateKey].push(event);
     });
 
     // Sortowanie chronologiczne
     Object.keys(groups).forEach((key) => {
-      groups[key].sort((a, b) => 
-        // Poprawiono składnię opcjonalnego łańcucha ?.
-        (a.startTime?.getTime() || 0) - (b.startTime?.getTime() || 0)
+      groups[key].sort(
+        (a, b) =>
+          // Poprawiono składnię opcjonalnego łańcucha ?.
+          (a.startTime?.getTime() || 0) - (b.startTime?.getTime() || 0),
       );
     });
 
@@ -53,7 +54,7 @@ export const EventAgenda = ({ subEvents }: EventAgendaProps) => {
       title: sub.title,
       price: sub.price || 0,
       date: sub.date,
-      location: sub.address
+      location: sub.address,
     });
   };
 
@@ -81,7 +82,9 @@ export const EventAgenda = ({ subEvents }: EventAgendaProps) => {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-sky-600 font-medium text-sm">
                     <Clock className="h-3 w-3" />
-                    {sub.startTime ? format(new Date(sub.startTime), "HH:mm") : "TBA"}
+                    {sub.startTime
+                      ? format(new Date(sub.startTime), "HH:mm")
+                      : "TBA"}
                   </div>
                   <h4 className="font-bold text-lg">{sub.title}</h4>
                   <div className="flex items-center gap-2 text-muted-foreground text-xs">

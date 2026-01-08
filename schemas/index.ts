@@ -57,6 +57,10 @@ export const EventSchema = z
     images: z.array(z.string()).optional(),
     status: z.nativeEnum(EventStatus).optional().default(EventStatus.DRAFT),
     parentId: z.string().optional().nullable(),
+    categories: z
+      .array(z.string())
+      .min(1, "Wybierz przynajmniej jedną kategorię"),
+    price: z.coerce.number().min(0, "Cena nie może być ujemna").default(0),
     locations: z
       .array(
         z.object({
@@ -65,7 +69,7 @@ export const EventSchema = z
           address: z.string(),
           lat: z.number(),
           lng: z.number(),
-        })
+        }),
       )
       .optional(),
   })

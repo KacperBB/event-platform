@@ -1,11 +1,11 @@
 "use client";
 
-import { updateDescription } from '@/actions/settings';
-import React, { useState, useTransition } from 'react'
-import { Button } from '../ui/button';
-import { toast } from 'sonner';
-import { Textarea } from '../ui/textarea';
-import { maxLength } from 'zod';
+import { updateDescription } from "@/actions/settings";
+import React, { useState, useTransition } from "react";
+import { Button } from "../ui/button";
+import { toast } from "sonner";
+import { Textarea } from "../ui/textarea";
+import { maxLength } from "zod";
 
 interface DescriptionFormProps {
   initialDescription?: string | null;
@@ -34,11 +34,13 @@ const HandleDescription = ({ initialDescription }: DescriptionFormProps) => {
   };
 
   return (
-        <form action={onSubmit} className="flex flex-col gap-y-4 max-w-[400px]">
+    <form action={onSubmit} className="flex flex-col gap-y-4 max-w-[400px]">
       <div className="space-y-2">
         <p className="text-sm font-medium">Twój Opis</p>
         <div className="flex gap-x-2">
-        <p className={`text-xs ${description.length >= maxLength ? "text-red-500" : "text-muted-foreground"}`}>
+          <p
+            className={`text-xs ${description.length >= maxLength ? "text-red-500" : "text-muted-foreground"}`}
+          >
             {description.length}/{maxLength}
           </p>
           <Textarea
@@ -47,7 +49,7 @@ const HandleDescription = ({ initialDescription }: DescriptionFormProps) => {
             onChange={(e) => setDescription(e.target.value.slice(0, maxLength))}
             defaultValue={initialDescription || ""}
             placeholder={initialDescription}
-            className='resize-none'
+            className="resize-none"
           />
           <Button type="submit" disabled={isPending}>
             {isPending ? "Zapisywanie..." : "Zapisz"}
@@ -55,7 +57,7 @@ const HandleDescription = ({ initialDescription }: DescriptionFormProps) => {
         </div>
       </div>
     </form>
-  )
-}
+  );
+};
 
-export default HandleDescription
+export default HandleDescription;

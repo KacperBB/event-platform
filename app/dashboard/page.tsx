@@ -3,6 +3,7 @@ import { updateHandle } from "@/actions/settings";
 import { auth } from "@/auth";
 import HandleDescription from "@/components/auth/HandleDescription";
 import { HandleForm } from "@/components/auth/HandleForm";
+import { CategoryDialog } from "@/components/CategoryDialog";
 import OrganizerPanel from "@/components/dashboard/OrganizerPanel";
 import { UserTickets } from "@/components/dashboard/UserTickets";
 import { prisma } from "@/lib/db";
@@ -24,7 +25,8 @@ export default async function Dashboard() {
     },
   });
 
-  const isOrganizer = session?.user.role === "ORGANIZER";
+  const isOrganizer =
+    session?.user.role === "ORGANIZER" || session?.user.role === "ADMIN";
 
   return (
     <div className="p-10 flex flex-col gap-y-4">
@@ -90,6 +92,7 @@ export default async function Dashboard() {
       </div>
 
       <HandleForm />
+      <CategoryDialog />
       <HandleDescription />
 
       <form action={logout}>

@@ -5,10 +5,10 @@ import Credentials from "next-auth/providers/credentials";
 
 export default {
   providers: [
-Google({
-    clientId: process.env.AUTH_GOOGLE_ID,
-    clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    allowDangerousEmailAccountLinking: true, // Pozwala połączyć Google z istniejącym kontem e-mail
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      allowDangerousEmailAccountLinking: true, // Pozwala połączyć Google z istniejącym kontem e-mail
     }),
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID,

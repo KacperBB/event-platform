@@ -1,30 +1,26 @@
 import { toast } from "sonner";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-
-
-
-
 export interface CartItem {
-    id: string;
-    title: string;
-    price: number;
-    date?: Date | null; 
-    location: string;
+  id: string;
+  title: string;
+  price: number;
+  date?: Date | null;
+  location: string;
 }
 
 interface CartStore {
-    items: CartItem[];
-    addItem: (data: CartItem) => void;
-    removeItem: (id: string) => void;
-    removeAll: () => void;
+  items: CartItem[];
+  addItem: (data: CartItem) => void;
+  removeItem: (id: string) => void;
+  removeAll: () => void;
 }
 
 export const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
-      
+
       addItem: (data: CartItem) => {
         const currentItems = get().items;
         const existingItem = currentItems.find((item) => item.id === data.id);
@@ -47,6 +43,6 @@ export const useCart = create<CartStore>()(
     {
       name: "cart-storage", // Klucz w LocalStorage
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );

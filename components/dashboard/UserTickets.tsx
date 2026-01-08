@@ -36,7 +36,7 @@ export async function UserTickets({ userId }: { userId: string }) {
               "overflow-hidden transition-all",
               isCancelled
                 ? "opacity-60 grayscale bg-slate-50 border-slate-200"
-                : "border-l-4 border-l-primary shadow-sm"
+                : "border-l-4 border-l-primary shadow-sm",
             )}
           >
             <CardContent className="p-5">
@@ -44,13 +44,13 @@ export async function UserTickets({ userId }: { userId: string }) {
                 <div
                   className={cn(
                     "p-2 rounded-lg",
-                    isCancelled ? "bg-slate-200" : "bg-primary/10"
+                    isCancelled ? "bg-slate-200" : "bg-primary/10",
                   )}
                 >
                   <Ticket
                     className={cn(
                       "w-5 h-5",
-                      isCancelled ? "text-slate-500" : "text-primary"
+                      isCancelled ? "text-slate-500" : "text-primary",
                     )}
                   />
                 </div>
@@ -65,7 +65,7 @@ export async function UserTickets({ userId }: { userId: string }) {
                 className={cn(
                   "font-bold text-lg mb-2 line-clamp-1",
                   isCancelled &&
-                    "text-slate-600 line-through decoration-slate-400"
+                    "text-slate-600 line-through decoration-slate-400",
                 )}
               >
                 {booking.event.title}

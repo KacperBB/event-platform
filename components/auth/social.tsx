@@ -8,9 +8,11 @@ import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { useState } from "react";
 
 export const Social = () => {
-    const [loadingProvider, setLoadingProvider] = useState<"google" | "github" | null>(null);
+  const [loadingProvider, setLoadingProvider] = useState<
+    "google" | "github" | null
+  >(null);
   const onClick = (provider: "google" | "github") => {
-    setLoadingProvider(provider); 
+    setLoadingProvider(provider);
     signIn(provider, {
       callbackUrl: DEFAULT_LOGIN_REDIRECT,
     });
@@ -22,10 +24,12 @@ export const Social = () => {
         size="lg"
         className="w-full"
         variant="outline"
-        disabled={!!loadingProvider} 
+        disabled={!!loadingProvider}
         onClick={() => onClick("google")}
       >
-        <FcGoogle className={`h-5 w-5 ${loadingProvider === "github" ? "animate-pulse" : ""}`} />
+        <FcGoogle
+          className={`h-5 w-5 ${loadingProvider === "github" ? "animate-pulse" : ""}`}
+        />
       </Button>
       <Button
         size="lg"
@@ -34,7 +38,9 @@ export const Social = () => {
         disabled={!!loadingProvider}
         onClick={() => onClick("github")}
       >
-        <FaGithub className={`h-5 w-5 ${loadingProvider === "github" ? "animate-pulse" : ""}`} />
+        <FaGithub
+          className={`h-5 w-5 ${loadingProvider === "github" ? "animate-pulse" : ""}`}
+        />
       </Button>
     </div>
   );

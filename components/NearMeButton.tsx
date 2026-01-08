@@ -35,7 +35,7 @@ export const NearMeButton = ({ mapRef }: NearMeButtonProps) => {
         alert("Nie udało się pobrać Twojej lokalizacji.");
         setIsLocating(false);
       },
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true },
     );
   };
 
