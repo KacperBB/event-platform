@@ -4,8 +4,8 @@ import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export const simulatePayment = async (
-  orderId: string, 
-  shouldSucceed: boolean
+  orderId: string,
+  shouldSucceed: boolean,
 ) => {
   if (!shouldSucceed) {
     return { error: "❌ Płatność odrzucona przez bramkę (Symulacja)" };
@@ -13,7 +13,7 @@ export const simulatePayment = async (
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { bookings: true }, 
+    include: { bookings: true },
   });
 
   if (!order) return { error: "Nie znaleziono zamówienia." };
@@ -22,12 +22,11 @@ export const simulatePayment = async (
 
   try {
     await prisma.$transaction(async (tx) => {
-      
       await tx.order.update({
         where: { id: orderId },
         data: {
           status: "PAID",
-          paymentSessionId: mockSessionId, 
+          paymentSessionId: mockSessionId,
         },
       });
 
@@ -42,7 +41,6 @@ export const simulatePayment = async (
     // Odświeżamy stronę checkoutu, żeby pokazać sukces
     revalidatePath(`/checkout/${orderId}`);
     return { success: true };
-
   } catch (error) {
     console.error("Payment Error:", error);
     return { error: "Błąd bazy danych podczas przetwarzania płatności." };

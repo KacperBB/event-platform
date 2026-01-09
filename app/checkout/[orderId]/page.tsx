@@ -19,9 +19,9 @@ export default async function CheckoutPage({
     where: { id: orderId },
     include: {
       bookings: {
-        include: { event: true }
-      }
-    }
+        include: { event: true },
+      },
+    },
   });
 
   if (!order || order.userId !== session.user.id) notFound();
@@ -35,10 +35,13 @@ export default async function CheckoutPage({
         </div>
         <h1 className="text-3xl font-bold">Dziękujemy!</h1>
         <p className="text-muted-foreground">
-          Twoje zamówienie #{order.id.slice(-6)} zostało opłacone.
-          Bilety zostały wysłane na Twój profil.
+          Twoje zamówienie #{order.id.slice(-6)} zostało opłacone. Bilety
+          zostały wysłane na Twój profil.
         </p>
-        <a href="/dashboard" className="text-sky-600 font-medium hover:underline">
+        <a
+          href="/dashboard"
+          className="text-sky-600 font-medium hover:underline"
+        >
           Wróć do moich biletów &rarr;
         </a>
       </div>
@@ -47,7 +50,6 @@ export default async function CheckoutPage({
 
   return (
     <div className="container max-w-4xl py-10 grid md:grid-cols-2 gap-10">
-      
       {/* LEFT COLUMN */}
       <div className="space-y-6">
         <h1 className="text-3xl font-bold flex items-center gap-3">
@@ -56,7 +58,10 @@ export default async function CheckoutPage({
         </h1>
         <div className="divide-y border rounded-2xl overflow-hidden">
           {order.bookings.map((booking) => (
-            <div key={booking.id} className="p-4 bg-white flex justify-between items-center">
+            <div
+              key={booking.id}
+              className="p-4 bg-white flex justify-between items-center"
+            >
               <div>
                 <p className="font-bold">{booking.event.title}</p>
                 <p className="text-sm text-muted-foreground">
@@ -77,13 +82,12 @@ export default async function CheckoutPage({
       <div className="space-y-6">
         <h2 className="text-xl font-semibold">Płatność</h2>
         <OrderPaymentForm orderId={order.id} amount={order.totalAmount} />
-        
+
         <div className="text-xs text-muted-foreground text-center">
           <p>Bezpieczna transakcja zabezpieczona przez Mock Protocol.</p>
           <p>Klikając zapłać, akceptujesz regulamin wydarzenia.</p>
         </div>
       </div>
-
     </div>
   );
 }

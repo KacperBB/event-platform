@@ -6,6 +6,7 @@ import { HandleForm } from "@/components/auth/HandleForm";
 import { CategoryDialog } from "@/components/CategoryDialog";
 import OrganizerPanel from "@/components/dashboard/OrganizerPanel";
 import { UserTickets } from "@/components/dashboard/UserTickets";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/db";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import Image from "next/image";

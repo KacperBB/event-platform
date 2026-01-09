@@ -82,6 +82,8 @@ model Event {
   favouritedBy   Favorite[]
   subscribers   NotificationSubscription[]
   categories    Category[]
+  viewsCount    Int       @default(0)
+  interactions EventInteraction[]
 }
 
 model Category {
@@ -194,4 +196,13 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model EventInteraction {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String? 
+  ipHash    String?  
+  createdAt DateTime @default(now())
 }

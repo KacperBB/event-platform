@@ -2,8 +2,10 @@ import { prisma } from "@/lib/db";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Calendar, Ticket, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MapPin, Calendar, Ticket, AlertCircle, Eye } from "lucide-react";
 import { cn } from "@/lib/utils"; // Narzędzie Shadcn do klas CSS
+import Link from "next/link";
 
 export async function UserTickets({ userId }: { userId: string }) {
   const bookings = await prisma.booking.findMany({
@@ -82,15 +84,31 @@ export async function UserTickets({ userId }: { userId: string }) {
                 </div>
               </div>
 
-              <div className="pt-4 border-t text-center">
+              <div className="pt-4 border-t">
                 {isCancelled ? (
-                  <p className="text-xs font-medium text-slate-500 italic">
+                  <p className="text-xs font-medium text-slate-500 italic text-center">
                     Organizator odwołał to wydarzenie.
                   </p>
                 ) : (
-                  <p className="text-xs font-semibold text-green-600">
-                    Bilet jest ważny
-                  </p>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs font-semibold text-green-600 text-center">
+                      Bilet jest ważny
+                    </p>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" className="flex-1">
+                        <Link href={`/tickets/${booking.id}`}>
+                          <Ticket className="w-4 h-4 mr-2" />
+                          Bilet
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline" size="sm" className="flex-1">
+                        <Link href={`/events/${booking.event.id}`}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          Wydarzenie
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </div>
             </CardContent>

@@ -51,9 +51,7 @@ export const TicketCard = ({ ticket }: TicketCardProps) => {
         <div className="space-y-2 text-sm text-muted-foreground mb-6 flex-1">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-sky-600" />
-            <span>
-              {format(eventDate, "d MMMM yyyy", { locale: pl })}
-            </span>
+            <span>{format(eventDate, "d MMMM yyyy", { locale: pl })}</span>
           </div>
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-sky-600" />
@@ -63,14 +61,14 @@ export const TicketCard = ({ ticket }: TicketCardProps) => {
 
         <div className="pt-4 border-t flex gap-2">
           <Button variant="outline" className="flex-1" asChild>
-             <Link href={`/tickets/${ticket.id}`}>
-                <QrCode className="w-4 h-4 mr-2" />
-                Pokaż kod
-             </Link>
+            <Link href={`/tickets/${ticket.id}`}>
+              <QrCode className="w-4 h-4 mr-2" />
+              Pokaż kod
+            </Link>
           </Button>
         </div>
       </div>
-      
+
       <div className="absolute top-40 -left-2 w-4 h-4 bg-background rounded-full" />
       <div className="absolute top-40 -right-2 w-4 h-4 bg-background rounded-full" />
     </div>
