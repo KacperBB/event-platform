@@ -1,7 +1,7 @@
 "use client";
 
-import { ShoppingBag, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Loader2, ShoppingBag, Trash2 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -13,13 +13,19 @@ import {
 } from "@/components/ui/sheet";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
-import { useCart } from "@/actions/use-cart";
+import { useCart } from "@/hooks/use-cart";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { createOrder } from "@/actions/create-order";
 
 export const CartSheet = () => {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [isMounted, setIsMounted] = useState(false);
   const cart = useCart();
 
-  // HYDRATION FIX: Zapobiega błędowi różnicy między serwerem a klientem
+  // HYDRATION FIX: 
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -31,6 +37,22 @@ export const CartSheet = () => {
     return total + Number(item.price);
   }, 0);
 
+  const handleCheckout = () => {
+    startTransition(async () => {
+      const eventIds = cart.items.map((item) => item.id);
+
+      const result = await createOrder(eventIds);
+
+      if(result.error) {
+        toast.error(result.error)
+      } else if (result.success && result.orderId) {
+        toast.success("Zamówienie utworzone! Przekierowywanie...");
+        cart.removeAll(); 
+        setOpen(false);  
+        router.push(`/checkout/${result.orderId}`);
+      }
+    })
+  }
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -97,9 +119,14 @@ export const CartSheet = () => {
               <span>Razem:</span>
               <span>{totalPrice} PLN</span>
             </div>
-            <Button className="w-full h-12 rounded-xl text-md bg-sky-600 hover:bg-sky-700">
-              Przejdź do kasy
-            </Button>
+<Button 
+    className="w-full h-12 rounded-xl text-md bg-sky-600 hover:bg-sky-700"
+    onClick={handleCheckout}
+    disabled={isPending}
+  >
+    {isPending ? <Loader2 className="animate-spin mr-2" /> : null}
+    Przejdź do kasy
+  </Button>
           </div>
         )}
       </SheetContent>

@@ -2,7 +2,7 @@
 
 import { ShoppingCart, Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/actions/use-cart";
+import { useCart } from "@/hooks/use-cart";
 
 interface AddToCartButtonProps {
   event: {
